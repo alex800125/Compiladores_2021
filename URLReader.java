@@ -8,12 +8,13 @@ import java.util.Scanner;
 
 class URLReader {
     public static void main(String[] args) {
-        Lexico lexico = new Lexico();
+        
         for (int i = 0; i < args.length; i++) {
 
             System.out.println(" ****************************** ");
             System.out.println("****" + "Entrando no Arquivo " + i + " ****");
             System.out.println(" ****************************** ");
+            Lexico lexico = new Lexico();
             try {
                 URL url = new URL(args[i]);
                 Scanner in = new Scanner(url.openStream());
