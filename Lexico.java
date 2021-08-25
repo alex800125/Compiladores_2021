@@ -1,35 +1,29 @@
-//package Compiladores_2021;
-
-import java.io.IOException;
-import java.util.Scanner;
-
 public class Lexico{
 
     // Variaveis globais
-    String palavra;
+    Character caracter;
 
     public Lexico(){    
-        System.out.println(" ****************************** ");
-        System.out.println("       " + "LEXICO - iniciado" + "       ");
-        System.out.println(" ****************************** ");
- 
+        System.out.println("Lexico - iniciado");
     }
 
-    public void analisadorLexical(String line){
-        // System.out.println(" ****************************** ");
-        // System.out.println("   " + "LEXICO - analisadorLexica" + "   ");
-        // System.out.println(" ****************************** ");
+    public void analisadorLexical(URLReader urlReader){
+        System.out.println("Lexico - analisadorLexical");
+        String linha= urlReader.pegarLinha();
+        
+        // colocar em um while, terminar depois
+        //while (!linha.equals("-999")){
+            pegaCaracter(linha);
+        //}
 
-        System.out.println("LEXICO - analisadorLexica ........" + line);
-        limparLinha(line);
+        urlReader.fecharArquivo();
     }
 
-    public Boolean limparLinha(String line){
-        // System.out.println("LEXICO - limparLinhaBoolean"); 
-        String[] parts = line.split(" ");
-        for (int i = 0; i < parts.length - 1; i++) {
-            palavra = parts[i];
-            //Logica para limpar a palavra
+    public Boolean pegaCaracter(String line){
+        
+        for (int i = 0; i < line.length(); i++) {
+            System.out.println("Lexico - pegaCaracter = " + caracter);
+            caracter = line.charAt(i);
         }
         return true;
     }
