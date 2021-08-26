@@ -1,10 +1,18 @@
+import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+
 public class Lexico{
 
     // Variaveis globais
     Character caracter;
+    private String codigo;
 
-    public Lexico(){    
+    public Lexico(String cod){    
         System.out.println("Lexico - iniciado");
+        codigo = cod;
+    }
+
+    public String Executar(){
+        return "Compilado com sucesso";
     }
 
     public void analisadorLexical(URLReader urlReader){
@@ -27,4 +35,6 @@ public class Lexico{
         }
         return true;
     }
+
+
 }
