@@ -147,17 +147,16 @@ public class Interface extends JFrame {
         String linhabarra = "";
 
         if (indicechar < codigo.length()) {
-                linhabarra = "1\n";
+            linhabarra = "1\n";
         }
 
         while (indicechar < codigo.length()) {
-                if(codigo.charAt(indicechar) == '\n') {
-                        i++;
-                        linhabarra = linhabarra + String.valueOf(i) + '\n';
-                }
-                indicechar++;
+            if(codigo.charAt(indicechar) == '\n') {
+                i++;
+                linhabarra = linhabarra + String.valueOf(i) + '\n';
+            }
+            indicechar++;
         }
-
         numerolinha.setText(linhabarra);
     }
 
