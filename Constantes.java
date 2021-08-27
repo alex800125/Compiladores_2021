@@ -79,10 +79,10 @@ public class Constantes {
 	public static final String IGUAL_LEXEMA = "=";
 
 	public static final String MENOR_SIMBOLO = "s_menor";
-	public static final String MENOR_LEXEMA = ">";
+	public static final String MENOR_LEXEMA = "<";
 
 	public static final String MENOR_IGUAL_SIMBOLO = "s_menor_igual";
-	public static final String MENOR_IGUAL_LEXEMA = ">=";
+	public static final String MENOR_IGUAL_LEXEMA = "<=";
 
 	public static final String DIFERENTE_SIMBOLO = "s_diferente";
 	public static final String DIFERENTE_LEXEMA = "!=";
@@ -116,5 +116,4 @@ public class Constantes {
 
 	public static final String FALSO_SIMBOLO = "s_falso";
 	public static final String FALSO_LEXEMA = "falso";
-
 }
