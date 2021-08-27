@@ -25,15 +25,6 @@ public class Lexico {
         return "Fim da execução";
     }
 
-    public Boolean pegaCaracter(String line) {
-
-        for (int i = 0; i < line.length(); i++) {
-            System.out.println("Lexico - pegaCaracter = " + caracter);
-            caracter = line.charAt(i);
-        }
-        return true;
-    }
-
     private char pegaCaracter() {
         char atualChar = codigo.charAt(indice);
         indice++;
