@@ -91,24 +91,31 @@ public class Lexico {
     }
 
     private Token TrataDigito(char carac){
+        return new Token("","", linha);
     }
 
     private Token TrataIdentificadorPalavraReservada(char carac){
+        return new Token("","", linha);
     }
 
     private Token EscolhaIdentificador(String palavra){
+        return new Token("","", linha);
     }
 
     private Token TrataAtribuicao(char carac){
+        return new Token("","", linha);
     }
 
     private Token TrataOperadorRelacional(char carac){
+        return new Token("","", linha);
     }
 
     private Token TrataPontuacao(char carac){
+        return new Token("","", linha);
     }
 
     private Token TrataOperadorAritmetico(char carac){
+        return new Token("","", linha);
     }
 
 }
