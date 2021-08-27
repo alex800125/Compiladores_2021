@@ -1,45 +1,32 @@
-import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
-
-public class Lexico{
+public class Lexico {
 
     // Variaveis globais
     Character caracter;
     private String codigo;
     private int indice = 0;
     private int linha = 1;
-    private String linhaerro ="";
+    private String linhaerro = "";
 
-    public Lexico(String cod){    
+    public Lexico(String cod) {
         System.out.println("Lexico - iniciado");
         codigo = cod;
     }
 
-    public String Executar(){
+    public String analisadorLexical() {
+        System.out.println("Lexico - analisadorLexical indice = " + indice + " codigo.length() = " + codigo.length());
         char caracter;
-        
-        while(indice<codigo.length())
-        {
-            caracter = PegaCaracter();
-            caracter = CharsIgnorados(caracter);
+
+        while (indice < codigo.length()) {
+            caracter = pegaCaracter();
+            System.out.println("Lexico - caracter = " + caracter);
+            caracter = charsIgnorados(caracter);
         }
-        
+        System.out.println("Lexico - Fim da execução");
         return "Fim da execução";
     }
 
-    public void analisadorLexical(URLReader urlReader){
-        System.out.println("Lexico - analisadorLexical");
-        String linha= urlReader.pegarLinha();
-        
-        // colocar em um while, terminar depois
-        //while (!linha.equals("-999")){
-            pegaCaracter(linha);
-        //}
+    public Boolean pegaCaracter(String line) {
 
-        urlReader.fecharArquivo();
-    }
-
-    public Boolean pegaCaracter(String line){
-        
         for (int i = 0; i < line.length(); i++) {
             System.out.println("Lexico - pegaCaracter = " + caracter);
             caracter = line.charAt(i);
@@ -47,43 +34,42 @@ public class Lexico{
         return true;
     }
 
-    private char PegaCaracter() {
-        return codigo.charAt(indice);
+    private char pegaCaracter() {
+        char atualChar = codigo.charAt(indice);
+        indice++;
+        return atualChar;
     }
 
-    private char CharsIgnorados(char carac) {
-        while(carac == '{' || carac == ' ' || carac == '	' || carac == '\n' && indice<codigo.length()) {
-            if(carac == '{'){
-                while(carac != '}' && indice<codigo.length()-1){
+    private char charsIgnorados(char carac) {
+        while (carac == '{' || carac == ' ' || carac == '	' || carac == '\n' && indice < codigo.length()) {
+            if (carac == '{') {
+                while (carac != '}' && indice < codigo.length() - 1) {
                     indice++;
-                    carac = PegaCaracter();
-                    if(carac =='\n')
-                    {
+                    carac = pegaCaracter();
+                    if (carac == '\n') {
                         linha++;
                     }
                 }
-                if(carac == '}'){
-                indice++;
-                carac = PegaCaracter();
-                }
-                else{
+                if (carac == '}') {
+                    indice++;
+                    carac = pegaCaracter();
+                } else {
                     linhaerro = "Erro na linha:" + linha;
-                    indice=codigo.length();
+                    indice = codigo.length();
                     return carac;
                 }
             }
-            if(carac == ' ' || carac == '	' && indice<codigo.length()-1){
+            if (carac == ' ' || carac == '	' && indice < codigo.length() - 1) {
                 indice++;
-                carac = PegaCaracter();
+                carac = pegaCaracter();
             }
-            if(carac == '\n' && indice<codigo.length()-1){
+            if (carac == '\n' && indice < codigo.length() - 1) {
                 indice++;
                 linha++;
-                carac = PegaCaracter();
-            }            
+                carac = pegaCaracter();
+            }
         }
         return carac;
     }
-
 
 }
