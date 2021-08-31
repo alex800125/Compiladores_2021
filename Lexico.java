@@ -16,7 +16,6 @@ public class Lexico {
     }
 
     public String analisadorLexical() {
-        System.out.println("Lexico - analisadorLexical indice = " + indice + " codigo.length() = " + codigo.length());
         char caracter;
         Token token;
 
@@ -24,9 +23,6 @@ public class Lexico {
             caracter = pegaCaracter();
             caracter = charsIgnorados(caracter);
             token = PegaToken(caracter);
-
-            System.out.println("Lexico - token.getLexema() = " + token.getLexema() + " token.getSimbolo() = "
-                    + token.getSimbolo());
             Tokens.add(token);
         }
 
@@ -45,10 +41,9 @@ public class Lexico {
 
     private char charsIgnorados(char carac) {
         while ((carac == '{' || carac == ' ' || carac == '	' || carac == '\n') && indice < codigo.length()) {
-            System.out.println(
-                    "Lexico - carac = '" + carac + "' indice = " + indice + " codigo.length() = " + codigo.length());
+
             if (carac == '{') {
-                while (carac != '}' && indice < codigo.length() - 1) {
+                while (carac != '}' && indice < codigo.length()) {
                     carac = pegaCaracter();
                     if (carac == '\n') {
                         linha++;
@@ -59,6 +54,7 @@ public class Lexico {
                 } else {
                     linhaerro = "Erro na linha:" + linha;
                     indice = codigo.length();
+                    carac = pegaCaracter();
                     return carac;
                 }
             }
@@ -116,14 +112,14 @@ public class Lexico {
         String palavra = "";
         Token token;
 
-        while ((Character.isDigit(carac) || Character.isLetter(carac) || carac == '_') && indice < codigo.length()) {
-            // System.out.println("Lexico - WHILE palavra = " + palavra);
+        while ((Character.isDigit(carac) || Character.isLetter(carac) || carac == '_') && indice <= codigo.length()) {
             palavra = palavra + Character.toString(carac);
             carac = pegaCaracter();
         }
-        // System.out.println("Lexico - TrataIdentificadorPalavraReservada = " +
-        // palavra);
-        indice--;
+        if(indice!=codigo.length()){
+            indice--;
+        }
+        
         switch (palavra) {
             case Constantes.PROGRAMA_LEXEMA:
                 token = new Token(Constantes.PROGRAMA_SIMBOLO, palavra, linha);
@@ -342,8 +338,7 @@ public class Lexico {
     private void printarTokens() {
         int i = 0;
         while (Tokens.size() > i) {
-            System.out.println(
-                    "Simbolo = " + Tokens.elementAt(i).getSimbolo() + " Lexema = " + Tokens.elementAt(i).getLexema());
+            System.out.println("Simbolo = " + Tokens.elementAt(i).getSimbolo() + " Lexema = " + Tokens.elementAt(i).getLexema());
             i++;
         }
     }
