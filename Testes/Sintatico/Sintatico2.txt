@@ -1,0 +1,16 @@
+programa exp;
+var Contador,
+       Resultado,
+       Base, Expoente : inteiro;
+inicio
+	leia(Base);
+	leia(Expoente);
+	Contador := 1;
+	Resultado := 1;
+	enquanto Contador <= Expoente faca
+	inicio
+		Resultado := Resultado * Base;
+		Contador:= Contador + 1;
+	fim;
+	Exp := Resultado
+fim.

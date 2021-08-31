@@ -1,0 +1,6 @@
+programa p;
+var a,b; inteiro;
+procedimento t;
+inicio
+a!=b
+fim.

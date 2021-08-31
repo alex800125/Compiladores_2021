@@ -1,0 +1,11 @@
+programa test1;
+
+var a,b,c: inteiro;
+
+inicio
+    analisa1;
+    analisa2;
+    se b > (c+ a*a)
+    entao a:=b
+    escreva(a)	
+fim.
