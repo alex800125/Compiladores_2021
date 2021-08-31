@@ -105,7 +105,8 @@ public class Interface extends JFrame {
 
         public void actionPerformed(ActionEvent event) {
             try {
-                JFileChooser file = new JFileChooser("D:\\Faculdade/S10/");
+                // JFileChooser file = new JFileChooser("D:\\Faculdade/S10/");
+                JFileChooser file = new JFileChooser("C:\\Users/alex8/Documents/Compiladores/Compiladores_2021/Testes");
                 file.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 file.showOpenDialog(null);
                 File arquivo = file.getSelectedFile();
@@ -127,7 +128,7 @@ public class Interface extends JFrame {
         public void actionPerformed(ActionEvent event) {
             if (event.getSource() == tokens) {
                 String msgconsole;
-                //System.out.print("reacodigo.getText() = " + areaCodigo.getText());
+                // System.out.print("reacodigo.getText() = " + areaCodigo.getText());
                 Lexico lexico = new Lexico(areaCodigo.getText());
                 msgconsole = lexico.analisadorLexical();
                 console.setText(msgconsole);
@@ -138,11 +139,11 @@ public class Interface extends JFrame {
         }
     }
 
-    private void ColocaTokens(){    
+    private void ColocaTokens() {
         DefaultTableModel pilhasimbolos = (DefaultTableModel) simbolos.getModel();
 
         for (Token token : vetokens) {
-            Object[] dados = {token.getLexema(), token.getSimbolo()};
+            Object[] dados = { token.getLexema(), token.getSimbolo() };
             pilhasimbolos.addRow(dados);
         }
     }

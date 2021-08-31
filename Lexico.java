@@ -16,7 +16,7 @@ public class Lexico {
     }
 
     public String analisadorLexical() {
-        //System.out.println("Lexico - analisadorLexical indice = " + indice + " codigo.length() = " + codigo.length());
+        System.out.println("Lexico - analisadorLexical indice = " + indice + " codigo.length() = " + codigo.length());
         char caracter;
         Token token;
 
@@ -24,6 +24,9 @@ public class Lexico {
             caracter = pegaCaracter();
             caracter = charsIgnorados(caracter);
             token = PegaToken(caracter);
+
+            System.out.println("Lexico - token.getLexema() = " + token.getLexema() + " token.getSimbolo() = "
+                    + token.getSimbolo());
             Tokens.add(token);
         }
 
@@ -41,7 +44,9 @@ public class Lexico {
     }
 
     private char charsIgnorados(char carac) {
-        while (carac == '{' || carac == ' ' || carac == '	' || carac == '\n' && indice < codigo.length()) {
+        while ((carac == '{' || carac == ' ' || carac == '	' || carac == '\n') && indice < codigo.length()) {
+            System.out.println(
+                    "Lexico - carac = '" + carac + "' indice = " + indice + " codigo.length() = " + codigo.length());
             if (carac == '{') {
                 while (carac != '}' && indice < codigo.length() - 1) {
                     carac = pegaCaracter();
@@ -89,22 +94,21 @@ public class Lexico {
         }
     }
 
-    private Token TrataDigito(char carac){
-        String numero=""; 
+    private Token TrataDigito(char carac) {
+        String numero = "";
         numero += carac;
-                
-        while(Character.isDigit(carac) && indice<codigo.length()-1){
+
+        while (Character.isDigit(carac) && indice < codigo.length() - 1) {
             carac = pegaCaracter();
             if (Character.isDigit(carac)) {
                 numero += carac;
             }
         }
         indice--;
-        if(!Character.isDigit(carac)){
-            return new Token(Constantes.NUMERO_SIMBOLO,numero, linha);
-        }
-        else{
-            return new Token(Constantes.NUMERO_SIMBOLO,numero, linha);
+        if (!Character.isDigit(carac)) {
+            return new Token(Constantes.NUMERO_SIMBOLO, numero, linha);
+        } else {
+            return new Token(Constantes.NUMERO_SIMBOLO, numero, linha);
         }
     }
 
@@ -112,12 +116,13 @@ public class Lexico {
         String palavra = "";
         Token token;
 
-        while ((Character.isDigit(carac) || Character.isLetter(carac) || carac=='_') && indice<codigo.length()) {
-            //System.out.println("Lexico - WHILE palavra = " + palavra);
+        while ((Character.isDigit(carac) || Character.isLetter(carac) || carac == '_') && indice < codigo.length()) {
+            // System.out.println("Lexico - WHILE palavra = " + palavra);
             palavra = palavra + Character.toString(carac);
             carac = pegaCaracter();
         }
-        //System.out.println("Lexico - TrataIdentificadorPalavraReservada = " + palavra);
+        // System.out.println("Lexico - TrataIdentificadorPalavraReservada = " +
+        // palavra);
         indice--;
         switch (palavra) {
             case Constantes.PROGRAMA_LEXEMA:
@@ -163,7 +168,7 @@ public class Lexico {
                 token = new Token(Constantes.VAR_SIMBOLO, palavra, linha);
                 break;
             case Constantes.INTEIRO_LEXEMA:
-                token = new Token(Constantes.INICIO_SIMBOLO, palavra, linha);
+                token = new Token(Constantes.INTEIRO_SIMBOLO, palavra, linha);
                 break;
             case Constantes.BOOLEANO_LEXEMA:
                 token = new Token(Constantes.BOOLEANO_SIMBOLO, palavra, linha);
@@ -238,115 +243,107 @@ public class Lexico {
         return token;
     }
 
-    private Token TrataAtribuicao(char carac){
-        String atribuicao="";
+    private Token TrataAtribuicao(char carac) {
+        String atribuicao = "";
         atribuicao += carac;
 
-        if(indice<codigo.length()-1)
-        {
+        if (indice < codigo.length() - 1) {
             carac = pegaCaracter();
-            if(carac=='=' && indice<codigo.length()){
+            if (carac == '=' && indice < codigo.length()) {
                 atribuicao += carac;
-                return new Token(Constantes.ATRIBUICAO_SIMBOLO,Constantes.ATRIBUICAO_LEXEMA,linha);
+                return new Token(Constantes.ATRIBUICAO_SIMBOLO, Constantes.ATRIBUICAO_LEXEMA, linha);
             }
+        } else {
+            return new Token(Constantes.DOIS_PONTOS_SIMBOLO, Constantes.DOIS_PONTOS_LEXEMA, linha);
         }
-        else{
-            return new Token(Constantes.DOIS_PONTOS_SIMBOLO,Constantes.DOIS_PONTOS_LEXEMA,linha);
-        }  
-        return new Token(Constantes.DOIS_PONTOS_SIMBOLO,Constantes.DOIS_PONTOS_LEXEMA,linha);
+        return new Token(Constantes.DOIS_PONTOS_SIMBOLO, Constantes.DOIS_PONTOS_LEXEMA, linha);
     }
 
-    private Token TrataOperadorRelacional(char carac){
-        String op="";      
-        op+=carac;
-        
-        if(carac=='<'){   
-            if(indice<codigo.length()){
-            carac = pegaCaracter();
+    private Token TrataOperadorRelacional(char carac) {
+        String op = "";
+        op += carac;
+
+        if (carac == '<') {
+            if (indice < codigo.length()) {
+                carac = pegaCaracter();
             }
-            if(carac=='='){
-                op+=carac;
-                return new Token(Constantes.MENOR_IGUAL_SIMBOLO,Constantes.MENOR_IGUAL_LEXEMA,linha);
-            }
-            else{
+            if (carac == '=') {
+                op += carac;
+                return new Token(Constantes.MENOR_IGUAL_SIMBOLO, Constantes.MENOR_IGUAL_LEXEMA, linha);
+            } else {
                 indice--;
-                return new Token(Constantes.MENOR_SIMBOLO,Constantes.MENOR_LEXEMA,linha);
+                return new Token(Constantes.MENOR_SIMBOLO, Constantes.MENOR_LEXEMA, linha);
             }
-        }
-        else if(carac=='>'){
-            if(indice<codigo.length()){
-            carac = pegaCaracter();
+        } else if (carac == '>') {
+            if (indice < codigo.length()) {
+                carac = pegaCaracter();
             }
-            if(carac=='='){
-                op+=carac;
-                return new Token(Constantes.MAIOR_IGUAL_SIMBOLO,Constantes.MAIOR_IGUAL_LEXEMA,linha);
-            }
-            else{
+            if (carac == '=') {
+                op += carac;
+                return new Token(Constantes.MAIOR_IGUAL_SIMBOLO, Constantes.MAIOR_IGUAL_LEXEMA, linha);
+            } else {
                 indice--;
-                return new Token(Constantes.MAIOR_SIMBOLO,Constantes.MAIOR_LEXEMA,linha);
+                return new Token(Constantes.MAIOR_SIMBOLO, Constantes.MAIOR_LEXEMA, linha);
             }
-        }
-        else if(carac=='='){
-            return new Token(Constantes.IGUAL_SIMBOLO,Constantes.IGUAL_LEXEMA,linha);
-        }
-        else if(carac=='!'){
-            if(indice<codigo.length()){
-            carac = pegaCaracter();
-            }
-            else{
+        } else if (carac == '=') {
+            return new Token(Constantes.IGUAL_SIMBOLO, Constantes.IGUAL_LEXEMA, linha);
+        } else if (carac == '!') {
+            if (indice < codigo.length()) {
+                carac = pegaCaracter();
+            } else {
                 linhaerro = "Erro na linha:" + linha;
-                indice=codigo.length();
-                return new Token("","", linha);
+                indice = codigo.length();
+                return new Token("", "", linha);
             }
-            if(carac=='='){
-                op+=carac;
-                return new Token(Constantes.DIFERENTE_SIMBOLO,Constantes.DIFERENTE_LEXEMA,linha);
-            }
-            else{
+            if (carac == '=') {
+                op += carac;
+                return new Token(Constantes.DIFERENTE_SIMBOLO, Constantes.DIFERENTE_LEXEMA, linha);
+            } else {
                 linhaerro = "Erro na linha:" + linha;
-                indice=codigo.length();
-                return new Token("","", linha);
+                indice = codigo.length();
+                return new Token("", "", linha);
             }
         }
         linhaerro = "Erro na linha:" + linha;
-        indice=codigo.length();
-        return new Token("","", linha);
+        indice = codigo.length();
+        return new Token("", "", linha);
     }
 
-    private Token TrataPontuacao(char carac){
+    private Token TrataPontuacao(char carac) {
         switch (carac) {
             case ';':
-                return new Token(Constantes.PONTO_VIRGULA_SIMBOLO,Constantes.PONTO_VIRGULA_LEXEMA,linha);
+                return new Token(Constantes.PONTO_VIRGULA_SIMBOLO, Constantes.PONTO_VIRGULA_LEXEMA, linha);
             case ',':
-                return new Token(Constantes.VIRGULA_SIMBOLO,Constantes.VIRGULA_LEXEMA,linha);
+                return new Token(Constantes.VIRGULA_SIMBOLO, Constantes.VIRGULA_LEXEMA, linha);
             case '(':
-                return new Token(Constantes.ABRE_PARENTESES_SIMBOLO,Constantes.ABRE_PARENTESES_LEXEMA,linha);
+                return new Token(Constantes.ABRE_PARENTESES_SIMBOLO, Constantes.ABRE_PARENTESES_LEXEMA, linha);
             case ')':
-                return new Token(Constantes.FECHA_PARENTESES_SIMBOLO,Constantes.FECHA_PARENTESES_LEXEMA,linha);
+                return new Token(Constantes.FECHA_PARENTESES_SIMBOLO, Constantes.FECHA_PARENTESES_LEXEMA, linha);
             default:
-                return new Token(Constantes.PONTO_SIMBOLO,Constantes.PONTO_LEXEMA,linha);
+                return new Token(Constantes.PONTO_SIMBOLO, Constantes.PONTO_LEXEMA, linha);
         }
     }
 
-    private Token TrataOperadorAritmetico(char carac){
+    private Token TrataOperadorAritmetico(char carac) {
         switch (carac) {
-            case '+':              
-                return new Token(Constantes.MAIS_SIMBOLO,Constantes.MAIS_LEXEMA,linha);
+            case '+':
+                return new Token(Constantes.MAIS_SIMBOLO, Constantes.MAIS_LEXEMA, linha);
             case '-':
-                return new Token(Constantes.MENOS_SIMBOLO,Constantes.MENOS_LEXEMA,linha);
+                return new Token(Constantes.MENOS_SIMBOLO, Constantes.MENOS_LEXEMA, linha);
             default:
-                return new Token(Constantes.MULT_SIMBOLO,Constantes.MULT_LEXEMA,linha);
+                return new Token(Constantes.MULT_SIMBOLO, Constantes.MULT_LEXEMA, linha);
         }
     }
 
-    public Vector<Token> PegaVetor(){
+    public Vector<Token> PegaVetor() {
         return Tokens;
     }
 
     private void printarTokens() {
         int i = 0;
         while (Tokens.size() > i) {
-            System.out.println("Simbolo = " + Tokens.elementAt(i).getSimbolo() + " Lexema = " + Tokens.elementAt(i).getLexema());
+            System.out.println(
+                    "Simbolo = " + Tokens.elementAt(i).getSimbolo() + " Lexema = " + Tokens.elementAt(i).getLexema());
             i++;
         }
     }
