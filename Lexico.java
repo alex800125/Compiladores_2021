@@ -3,7 +3,6 @@ import java.util.Vector;
 public class Lexico {
 
     // Variaveis globais
-    Character caracter;
     private String codigo;
     private int indice = 0;
     private int linha = 1;
@@ -12,62 +11,62 @@ public class Lexico {
     private Vector<Token> Tokens = new Vector<Token>();
 
     public Lexico(String cod) {
-        System.out.println("Lexico - iniciado");
         codigo = cod;
     }
 
     public String analisadorLexical() {
-        char caracter;
         Token token;
-
+        char caracter;
         while (indice < codigo.length()) {
             caracter = pegaCaracter();
             caracter = charsIgnorados(caracter);
             token = PegaToken(caracter);
             Tokens.add(token);
+            //System.out.println(token.getSimbolo() + " - " + indice + " - " +codigo.length());
         }
-
-        if (erro) {
-            System.out.println("LEXIO ERRO = " + linhaerro);
-        }
-
-        printarTokens();
-        return "Fim da execução";
+  
+        //printarTokens();
+        return linhaerro;
     }
 
     private char pegaCaracter() {
-        char atualChar = ' ';
-        if (codigo.length() > indice) {
-            atualChar = codigo.charAt(indice);
-            indice++;
-        }
-        return atualChar;
+        return codigo.charAt(indice);
     }
 
     private char charsIgnorados(char carac) {
-        while ((carac == '{' || carac == ' ' || carac == '	' || carac == '\n') && indice < codigo.length()) {
-
+        while (carac == '{' || carac == ' ' || carac == '	' || carac == '\n' && indice < codigo.length()) {
             if (carac == '{') {
-                while (carac != '}' && indice < codigo.length()) {
+                while (carac != '}' && indice < codigo.length()-1) {
+                    indice++;
                     carac = pegaCaracter();
                     if (carac == '\n') {
                         linha++;
                     }
                 }
-                if (carac == '}') {
+                if (carac == '}' && indice < codigo.length()-1) {
+                    indice++;
                     carac = pegaCaracter();
                 } else {
                     erro = true;
                     linhaerro = "Erro na linha:" + linha;
                     indice = codigo.length();
-                    carac = pegaCaracter();
-                    return carac;
+                    return ' ';
                 }
             }
-            if (carac == ' ' || carac == '	' && indice < codigo.length() - 1) {
-                carac = pegaCaracter();
+            if(indice==codigo.length()-1){
+                return carac;
+            }
+            if(carac == ' ' && indice<codigo.length()){
+                indice++;
+                carac =pegaCaracter();
+
+            }
+            if(carac == '	' && indice<codigo.length()-1){
+                indice++;
+                carac =pegaCaracter();
             }
             if (carac == '\n' && indice < codigo.length() - 1) {
+                indice++;
                 linha++;
                 carac = pegaCaracter();
             }
@@ -101,189 +100,139 @@ public class Lexico {
         String numero = "";
         numero += carac;
 
-        while (Character.isDigit(carac) && indice < codigo.length() - 1) {
+        while (Character.isDigit(carac) && indice < codigo.length()-1) {
+            indice++;
             carac = pegaCaracter();
             if (Character.isDigit(carac)) {
                 numero += carac;
             }
         }
-        indice--;
-        return new Token(Constantes.NUMERO_SIMBOLO, numero, linha);
+        if(!Character.isDigit(carac)){
+            return new Token(Constantes.NUMERO_SIMBOLO,numero, linha);
+        }
+        else{
+            indice++;
+            return new Token(Constantes.NUMERO_SIMBOLO,numero, linha);
+        }
     }
 
     private Token TrataIdentificadorPalavraReservada(char carac) {
         String palavra = "";
-        Token token;
+        palavra += carac;
 
-        while ((Character.isDigit(carac) || Character.isLetter(carac) || carac == '_') && indice <= codigo.length()) {
-            palavra = palavra + Character.toString(carac);
+        while ((Character.isDigit(carac) || Character.isLetter(carac) || carac == '_') && indice < codigo.length()-1) {
+            indice++;
             carac = pegaCaracter();
+            if (Character.isDigit(carac) || Character.isLetter(carac) || carac=='_') {
+                palavra += carac;
+            }  
         }
-        if (indice != codigo.length()) {
-            indice--;
+        if(Character.isDigit(carac) || Character.isLetter(carac) || carac=='_'){
+            indice++;
         }
+        return EscolhaIdentificador(palavra);
+    }
 
+    private Token EscolhaIdentificador(String palavra){
         switch (palavra) {
             case Constantes.PROGRAMA_LEXEMA:
-                token = new Token(Constantes.PROGRAMA_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.INICIO_LEXEMA:
-                token = new Token(Constantes.INICIO_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.FIM_LEXEMA:
-                token = new Token(Constantes.FIM_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.PROCEDIMENTO_LEXEMA:
-                token = new Token(Constantes.PROCEDIMENTO_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.FUNCAO_LEXEMA:
-                token = new Token(Constantes.FUNCAO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.PROGRAMA_SIMBOLO, palavra, linha);
             case Constantes.SE_LEXEMA:
-                token = new Token(Constantes.SE_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.SE_SIMBOLO, palavra, linha);
             case Constantes.ENTAO_LEXEMA:
-                token = new Token(Constantes.ENTAO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.ENTAO_SIMBOLO, palavra, linha);
             case Constantes.SENAO_LEXEMA:
-                token = new Token(Constantes.SENAO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.SENAO_SIMBOLO, palavra, linha);
             case Constantes.ENQUANTO_LEXEMA:
-                token = new Token(Constantes.ENQUANTO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.ENQUANTO_SIMBOLO, palavra, linha);
             case Constantes.FACA_LEXEMA:
-                token = new Token(Constantes.FACA_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.ATRIBUICAO_LEXEMA:
-                token = new Token(Constantes.ATRIBUICAO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.FACA_SIMBOLO, palavra, linha);
+            case Constantes.INICIO_LEXEMA:
+                return new Token(Constantes.INICIO_SIMBOLO, palavra, linha);
+            case Constantes.FIM_LEXEMA:
+                return new Token(Constantes.FIM_SIMBOLO, palavra, linha);
             case Constantes.ESCREVA_LEXEMA:
-                token = new Token(Constantes.ESCREVA_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.ESCREVA_SIMBOLO, palavra, linha);
             case Constantes.LEIA_LEXEMA:
-                token = new Token(Constantes.LEIA_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.LEIA_SIMBOLO, palavra, linha);
             case Constantes.VAR_LEXEMA:
-                token = new Token(Constantes.VAR_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.VAR_SIMBOLO, palavra, linha);
             case Constantes.INTEIRO_LEXEMA:
-                token = new Token(Constantes.INTEIRO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.INTEIRO_SIMBOLO, palavra, linha);
             case Constantes.BOOLEANO_LEXEMA:
-                token = new Token(Constantes.BOOLEANO_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.NUMERO_LEXEMA:
-                token = new Token(Constantes.NUMERO_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.PONTO_LEXEMA:
-                token = new Token(Constantes.PONTO_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.PONTO_VIRGULA_LEXEMA:
-                token = new Token(Constantes.PONTO_VIRGULA_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.VIRGULA_LEXEMA:
-                token = new Token(Constantes.VIRGULA_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.ABRE_PARENTESES_LEXEMA:
-                token = new Token(Constantes.ABRE_PARENTESES_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.FECHA_PARENTESES_LEXEMA:
-                token = new Token(Constantes.FECHA_PARENTESES_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MAIOR_LEXEMA:
-                token = new Token(Constantes.MAIOR_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MAIOR_IGUAL_LEXEMA:
-                token = new Token(Constantes.MAIOR_IGUAL_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.IGUAL_LEXEMA:
-                token = new Token(Constantes.IGUAL_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MENOR_LEXEMA:
-                token = new Token(Constantes.MENOR_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MENOR_IGUAL_LEXEMA:
-                token = new Token(Constantes.MENOR_IGUAL_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.DIFERENTE_LEXEMA:
-                token = new Token(Constantes.DIFERENTE_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MAIS_LEXEMA:
-                token = new Token(Constantes.MAIS_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MENOS_LEXEMA:
-                token = new Token(Constantes.MENOS_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.MULT_LEXEMA:
-                token = new Token(Constantes.MULT_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.DIV_LEXEMA:
-                token = new Token(Constantes.DIV_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.E_LEXEMA:
-                token = new Token(Constantes.E_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.OU_LEXEMA:
-                token = new Token(Constantes.OU_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.NAO_LEXEMA:
-                token = new Token(Constantes.NAO_SIMBOLO, palavra, linha);
-                break;
-            case Constantes.DOIS_PONTOS_LEXEMA:
-                token = new Token(Constantes.DOIS_PONTOS_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.BOOLEANO_SIMBOLO, palavra, linha);
             case Constantes.VERDADEIRO_LEXEMA:
-                token = new Token(Constantes.VERDADEIRO_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.VERDADEIRO_SIMBOLO, palavra, linha); 
+            case Constantes.FALSO_LEXEMA:
+                return new Token(Constantes.FALSO_SIMBOLO, palavra, linha);                 
+            case Constantes.PROCEDIMENTO_LEXEMA:
+                return new Token(Constantes.PROCEDIMENTO_SIMBOLO, palavra, linha);
+            case Constantes.FUNCAO_LEXEMA:
+                return new Token(Constantes.FUNCAO_SIMBOLO, palavra, linha);
+            case Constantes.DIV_LEXEMA:
+                return new Token(Constantes.DIV_SIMBOLO, palavra, linha);
+            case Constantes.E_LEXEMA:
+                return new Token(Constantes.E_SIMBOLO, palavra, linha);
+            case Constantes.OU_LEXEMA:
+                return new Token(Constantes.OU_SIMBOLO, palavra, linha);
+            case Constantes.NAO_LEXEMA:
+                return new Token(Constantes.NAO_SIMBOLO, palavra, linha);
             default:
-                token = new Token(Constantes.IDENTIFICADOR_SIMBOLO, palavra, linha);
-                break;
+                return new Token(Constantes.IDENTIFICADOR_SIMBOLO, palavra, linha);
         }
-        return token;
     }
 
     private Token TrataAtribuicao(char carac) {
+
         if (indice < codigo.length() - 1) {
+            indice++;
             carac = pegaCaracter();
             if (carac == '=' && indice < codigo.length()) {
+                indice++;
                 return new Token(Constantes.ATRIBUICAO_SIMBOLO, Constantes.ATRIBUICAO_LEXEMA, linha);
-            } else {
-                indice--;
-                return new Token(Constantes.DOIS_PONTOS_SIMBOLO, Constantes.DOIS_PONTOS_LEXEMA, linha);
             }
+        }
+        else{
+            indice++;
+            return new Token(Constantes.DOIS_PONTOS_SIMBOLO, Constantes.DOIS_PONTOS_LEXEMA, linha);
         }
         return new Token(Constantes.DOIS_PONTOS_SIMBOLO, Constantes.DOIS_PONTOS_LEXEMA, linha);
     }
 
+    
     private Token TrataOperadorRelacional(char carac) {
         String op = "";
         op += carac;
 
         if (carac == '<') {
+            indice++;
             if (indice < codigo.length()) {
                 carac = pegaCaracter();
             }
             if (carac == '=') {
                 op += carac;
+                indice++;
                 return new Token(Constantes.MENOR_IGUAL_SIMBOLO, Constantes.MENOR_IGUAL_LEXEMA, linha);
             } else {
-                indice--;
                 return new Token(Constantes.MENOR_SIMBOLO, Constantes.MENOR_LEXEMA, linha);
             }
         } else if (carac == '>') {
+            indice++;
             if (indice < codigo.length()) {
                 carac = pegaCaracter();
             }
             if (carac == '=') {
                 op += carac;
+                indice++;
                 return new Token(Constantes.MAIOR_IGUAL_SIMBOLO, Constantes.MAIOR_IGUAL_LEXEMA, linha);
             } else {
-                indice--;
                 return new Token(Constantes.MAIOR_SIMBOLO, Constantes.MAIOR_LEXEMA, linha);
             }
         } else if (carac == '=') {
+            indice++;
             return new Token(Constantes.IGUAL_SIMBOLO, Constantes.IGUAL_LEXEMA, linha);
         } else if (carac == '!') {
+            indice++;
             if (indice < codigo.length()) {
                 carac = pegaCaracter();
             } else {
@@ -294,6 +243,7 @@ public class Lexico {
             }
             if (carac == '=') {
                 op += carac;
+                indice++;
                 return new Token(Constantes.DIFERENTE_SIMBOLO, Constantes.DIFERENTE_LEXEMA, linha);
             } else {
                 erro = true;
@@ -309,6 +259,7 @@ public class Lexico {
     }
 
     private Token TrataPontuacao(char carac) {
+        indice++;
         switch (carac) {
             case ';':
                 return new Token(Constantes.PONTO_VIRGULA_SIMBOLO, Constantes.PONTO_VIRGULA_LEXEMA, linha);
@@ -324,6 +275,7 @@ public class Lexico {
     }
 
     private Token TrataOperadorAritmetico(char carac) {
+        indice++;
         switch (carac) {
             case '+':
                 return new Token(Constantes.MAIS_SIMBOLO, Constantes.MAIS_LEXEMA, linha);
