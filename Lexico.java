@@ -28,7 +28,6 @@ public class Lexico {
         }
 
         printarTokens();
-        System.out.println("Lexico - Fim da execução");
         return "Fim da execução";
     }
 
@@ -338,6 +337,10 @@ public class Lexico {
             default:
                 return new Token(Constantes.MULT_SIMBOLO,Constantes.MULT_LEXEMA,linha);
         }
+    }
+
+    public Vector<Token> PegaVetor(){
+        return Tokens;
     }
 
     private void printarTokens() {

@@ -12,6 +12,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.*;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
 
 public class Interface extends JFrame {
 
@@ -23,6 +25,7 @@ public class Interface extends JFrame {
     private JLabel tituloConsole;
     private JTable simbolos;
     private JScrollPane painelPilha;
+    private Vector<Token> vetokens = new Vector<Token>();
 
     public Interface() {
         super("Analizador Lexico");
@@ -128,7 +131,19 @@ public class Interface extends JFrame {
                 Lexico lexico = new Lexico(areaCodigo.getText());
                 msgconsole = lexico.analisadorLexical();
                 console.setText(msgconsole);
+
+                vetokens = lexico.PegaVetor();
+                ColocaTokens();
             }
+        }
+    }
+
+    private void ColocaTokens(){    
+        DefaultTableModel pilhasimbolos = (DefaultTableModel) simbolos.getModel();
+
+        for (Token token : vetokens) {
+            Object[] dados = {token.getLexema(), token.getSimbolo()};
+            pilhasimbolos.addRow(dados);
         }
     }
 
