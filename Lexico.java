@@ -56,7 +56,7 @@ public class Lexico {
             if(indice==codigo.length()-1){
                 return carac;
             }
-            if(carac == ' ' && indice<codigo.length()){
+            if(carac == ' ' && indice<codigo.length()-1){
                 indice++;
                 carac =pegaCaracter();
 
@@ -90,8 +90,10 @@ public class Lexico {
             return TrataPontuacao(carac);
         } else {
             erro = true;
-            linhaerro = "Erro na linha:" + linha;
             indice = codigo.length();
+            if(!(carac==' ' || carac == '	' || carac == '\n')){
+                linhaerro = "Erro na linha:" + linha;
+            }
             return new Token("", "", linha);
         }
     }
