@@ -64,6 +64,7 @@ public class Lexico {
                     return carac;
                 }
             }
+<<<<<<< HEAD
             if (indice == codigo.length() - 1) {
                 return carac;
             }
@@ -74,6 +75,9 @@ public class Lexico {
             }
             if (carac == '	' && indice < codigo.length() - 1) {
                 indice++;
+=======
+            if (carac == ' ' || carac == '	' && indice < codigo.length() - 1) {
+>>>>>>> 4929c0d (Revert "Foi corrigido erros de comentários e palavras reservadas nao terminadas")
                 carac = pegaCaracter();
             }
             if (carac == '\n' && indice < codigo.length() - 1) {
