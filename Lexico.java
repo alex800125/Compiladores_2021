@@ -64,7 +64,16 @@ public class Lexico {
                     return carac;
                 }
             }
-            if (carac == ' ' || carac == '	' && indice < codigo.length() - 1) {
+            if (indice == codigo.length() - 1) {
+                return carac;
+            }
+            if (carac == ' ' && indice < codigo.length() - 1) {
+                indice++;
+                carac = pegaCaracter();
+
+            }
+            if (carac == '	' && indice < codigo.length() - 1) {
+                indice++;
                 carac = pegaCaracter();
             }
             if (carac == '\n' && indice < codigo.length() - 1) {
@@ -91,8 +100,10 @@ public class Lexico {
             return TrataPontuacao(carac);
         } else {
             erro = true;
-            linhaerro = "Erro na linha:" + linha;
             indice = codigo.length();
+            if (!(carac == ' ' || carac == '	' || carac == '\n')) {
+                linhaerro = "Erro na linha:" + linha;
+            }
             return new Token("", "", linha);
         }
     }
