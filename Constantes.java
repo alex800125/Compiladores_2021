@@ -52,7 +52,7 @@ public class Constantes {
 	public static final String IDENTIFICADOR_LEXEMA = "identificador";
 
 	public static final String NUMERO_SIMBOLO = "s_numero";
-	public static final String NUMERO_LEXEMA = "numero";
+	public static final String NUMERO_LEXEMA = "número";
 
 	public static final String PONTO_SIMBOLO = "s_ponto";
 	public static final String PONTO_LEXEMA = ".";
@@ -106,7 +106,7 @@ public class Constantes {
 	public static final String OU_LEXEMA = "ou";
 
 	public static final String NAO_SIMBOLO = "s_nao";
-	public static final String NAO_LEXEMA = "nao";
+	public static final String NAO_LEXEMA = "não";
 
 	public static final String DOIS_PONTOS_SIMBOLO = "s_doispontos";
 	public static final String DOIS_PONTOS_LEXEMA = ":";

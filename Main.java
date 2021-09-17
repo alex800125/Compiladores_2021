@@ -8,4 +8,5 @@ public class Main {
         analisador.setResizable(false);
         analisador.setVisible(true);
     }
+
 }
