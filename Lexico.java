@@ -30,6 +30,19 @@ public class Lexico {
         return linhaerro;
     }
 
+    public Token getToken() {
+        Token token;
+        char caracter;
+        if (indice < codigo.length()) {
+            caracter = pegaCaracter();
+            caracter = charsIgnorados(caracter);
+            token = PegaToken(caracter);
+            return token;
+        } else {
+            return new Token(Constantes.FIM_SIMBOLO, Constantes.FACA_LEXEMA, -1);
+        }
+    }
+
     private char pegaCaracter() {
         return codigo.charAt(indice);
     }
