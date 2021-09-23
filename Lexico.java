@@ -14,22 +14,6 @@ public class Lexico {
         codigo = cod;
     }
 
-    public String analisadorLexical() {
-        Token token;
-        char caracter;
-        while (indice < codigo.length()) {
-            caracter = pegaCaracter();
-            caracter = charsIgnorados(caracter);
-            token = PegaToken(caracter);
-            Tokens.add(token);
-            // System.out.println(token.getSimbolo() + " - " + indice + " - "
-            // +codigo.length());
-        }
-
-        // printarTokens();
-        return linhaerro;
-    }
-
     public Token getToken() {
         Token token;
         char caracter;
@@ -39,7 +23,7 @@ public class Lexico {
             token = PegaToken(caracter);
             return token;
         } else {
-            return new Token(Constantes.FIM_SIMBOLO, Constantes.FACA_LEXEMA, -1);
+            return new Token(Constantes.FIM_SIMBOLO, Constantes.FIM_LEXEMA, -1);
         }
     }
 
