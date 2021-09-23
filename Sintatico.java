@@ -89,12 +89,6 @@ public class Sintatico {
     }
 
     private void analisaSubrotinas(){
-        int flag = 0;
-        
-        if (token.getSimbolo().equals(Constantes.PROCEDIMENTO_SIMBOLO) || token.getSimbolo().equals(Constantes.FUNCAO_SIMBOLO)){
-            flag = 1;
-        }
-
         while (token.getSimbolo().equals(Constantes.PROCEDIMENTO_SIMBOLO) || token.getSimbolo().equals(Constantes.FUNCAO_SIMBOLO)){
 
                 if (token.getSimbolo().equals(Constantes.PROCEDIMENTO_SIMBOLO) ) {
@@ -108,10 +102,6 @@ public class Sintatico {
                     resultado = excecaoSintatico(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
                 }
         }
-        if(flag==1){
-            //gerar codigo
-        }
-
     }
 
     private void analisaComandos(){
