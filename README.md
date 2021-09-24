@@ -1,5 +1,5 @@
 # Compiladores_2021
-Projeto para a matéria de Compiladores em 2021 com o Freitas.
+Projeto para a matéria de Construção de Compiladores em 2021 com o professor Ricardo Freitas Freitas.
 
 Será utilizado o VS Code para este projeto, abaixo um tutorial de como configurar o ambiente:
 https://code.visualstudio.com/docs/java/java-tutorial

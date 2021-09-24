@@ -1,17 +1,36 @@
 import java.util.Vector;
+import Exception.LexicoException;
+import Exception.SemanticoException;
+import Exception.SintaticoException;
 
 public class Sintatico {
 
     private Vector<Token> Tokens = new Vector<Token>();
+    private String message = "";
+    private int linhaerro;
     private Lexico lexico;
-    String resultado = "";
     Token token = new Token("", "", 0);
 
     public Sintatico(String codigo){
         lexico = new Lexico(codigo);
+        try{
+            analisadorSintatico();
+        }
+        catch (SintaticoException e){
+            linhaerro = token.getLinha();
+            setMessage(e.getMessage());
+        }
+        catch (LexicoException e){
+            linhaerro = token.getLinha();
+            setMessage(e.getMessage());
+        } 
+        catch (SemanticoException e) {
+            linhaerro = token.getLinha();
+            setMessage(e.getMessage());
+        }
     }
 
-    public void analisadorSintatico() {
+    public void analisadorSintatico() throws SintaticoException, LexicoException, SemanticoException{
         getToken();
         if (token.getSimbolo().equals(Constantes.PROGRAMA_SIMBOLO)) {
             getToken();
@@ -21,34 +40,34 @@ public class Sintatico {
                     analisaBloco();
                     if (token.getSimbolo().equals(Constantes.PONTO_SIMBOLO)) {
                         getToken();
-                        if (token.getSimbolo().equals(Constantes.FIM_SIMBOLO)) {
-                            gerarListaToken();
-                            resultado = "Compilação concluida com sucesso";
+                        message = "Compilação concluida com sucesso";
+                        if (token.getSimbolo().equals(Constantes.FIM_SIMBOLO) && token.getLinha()==-1) {
+                            message = "Compilação concluida com sucesso";
                         } else {
-                            resultado = excecaoSintatico(Constantes.FIM_LEXEMA, token.getLexema(), token.getLinha());
+                            message = "Trecho de código inesperado após final do programa na linha: " + lexico.getLine();
                         }
                     } else {
-                        resultado = excecaoSintatico(Constantes.PONTO_LEXEMA, token.getLexema(), token.getLinha());
+                        throw new SintaticoException (Constantes.PONTO_LEXEMA, token.getLexema(), token.getLinha());
                     }
                 } else {
-                    resultado = excecaoSintatico(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
+                    throw new SintaticoException (Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
                 }
             } else {
-                resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
-            resultado = excecaoSintatico(Constantes.PROGRAMA_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.PROGRAMA_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    public void analisaBloco(){
+    public void analisaBloco() throws SintaticoException, LexicoException, SemanticoException{
         getToken();       
         analisaEtVariaveis();
         analisaSubrotinas();
         analisaComandos();
     }
 
-    private void analisaEtVariaveis(){
+    private void analisaEtVariaveis() throws SintaticoException, LexicoException, SemanticoException{
         if (token.getSimbolo().equals(Constantes.VAR_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)){
@@ -57,16 +76,16 @@ public class Sintatico {
                         if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)){
                             getToken();
                         } else {
-                            resultado = excecaoSintatico(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
+                            throw new SintaticoException (Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
                         }
                     }
             } else {
-                resultado = excecaoSintatico(Constantes.VAR_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.VAR_LEXEMA, token.getLexema(), token.getLinha());
             }
         }   
     }
 
-    private void analisaVariaveis(){
+    private void analisaVariaveis() throws SintaticoException, LexicoException, SemanticoException{
         do {
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
                 getToken();
@@ -74,21 +93,21 @@ public class Sintatico {
                     if (token.getSimbolo().equals(Constantes.VIRGULA_SIMBOLO)) {
                         getToken();
                         if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
-                            resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+                            throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
                         }
                     }
                 } else {
-                    resultado = excecaoSintatico("Virgula ou Dois Pontos", token.getLexema(), token.getLinha());
+                    throw new SintaticoException ("Virgula ou Dois Pontos", token.getLexema(), token.getLinha());
                 }
             } else {
-                resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } while (!(token.getSimbolo().equals(Constantes.VIRGULA_SIMBOLO)));
         getToken();
         analisaTipo();      
     }
 
-    private void analisaSubrotinas(){
+    private void analisaSubrotinas() throws SintaticoException, LexicoException, SemanticoException{
         while (token.getSimbolo().equals(Constantes.PROCEDIMENTO_SIMBOLO) || token.getSimbolo().equals(Constantes.FUNCAO_SIMBOLO)){
 
                 if (token.getSimbolo().equals(Constantes.PROCEDIMENTO_SIMBOLO) ) {
@@ -99,32 +118,32 @@ public class Sintatico {
                 if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO) ) {
                     getToken();
                 } else {
-                    resultado = excecaoSintatico(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
+                    throw new SintaticoException (Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
                 }
         }
     }
 
-    private void analisaComandos(){
+    private void analisaComandos() throws SintaticoException, LexicoException, SemanticoException{
         if (token.getSimbolo().equals(Constantes.INICIO_SIMBOLO)) {
-                getToken();
+                getToken(); 
                 analisaComandoSimples();
                 while (!(token.getSimbolo().equals(Constantes.FIM_SIMBOLO))) {
                         if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                             getToken();
-                            if (token.getSimbolo().equals(Constantes.FIM_SIMBOLO)) {
+                            if (!(token.getSimbolo().equals(Constantes.FIM_SIMBOLO))) {
                                 analisaComandoSimples();
                             }
                         } else {
-                            resultado = excecaoSintatico(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
+                            throw new SintaticoException (Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
                         }
                 }
                 getToken();
         } else {
-            resultado = excecaoSintatico(Constantes.INICIO_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.INICIO_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaComandoSimples() {
+    private void analisaComandoSimples() throws SintaticoException, LexicoException, SemanticoException{
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             analisaAtribChprocedimento();
         } else if (token.getSimbolo().equals(Constantes.SE_SIMBOLO)) {
@@ -140,7 +159,7 @@ public class Sintatico {
         }
     }
 
-    private void analisaAtribChprocedimento() {
+    private void analisaAtribChprocedimento() throws SintaticoException, LexicoException, SemanticoException{
         getToken();                
         if (token.getSimbolo().equals(Constantes.ATRIBUICAO_SIMBOLO)) {
             analisaAtribuicao();
@@ -149,13 +168,13 @@ public class Sintatico {
         }
     }
 
-    private void analisaAtribuicao(){
+    private void analisaAtribuicao() throws SintaticoException, LexicoException, SemanticoException{
         getToken(); 
         analisaExpressao();
 
     }
 
-    private void analisaExpressao(){
+    private void analisaExpressao() throws SintaticoException, LexicoException, SemanticoException{
         analisaExpressaoSimples();
         if (token.getSimbolo().equals(Constantes.MAIOR_SIMBOLO) || token.getSimbolo().equals(Constantes.MAIOR_IGUAL_SIMBOLO) || token.getSimbolo().equals(Constantes.IGUAL_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOR_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOR_IGUAL_SIMBOLO) || token.getSimbolo().equals(Constantes.DIFERENTE_SIMBOLO)) {
             getToken();
@@ -163,7 +182,7 @@ public class Sintatico {
         }
     }
 
-    private void analisaExpressaoSimples(){
+    private void analisaExpressaoSimples() throws SintaticoException, LexicoException, SemanticoException{
         if (token.getSimbolo().equals(Constantes.MAIS_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOS_SIMBOLO)) {
             getToken();
         }
@@ -174,7 +193,7 @@ public class Sintatico {
         }
     }
     
-    private void analisaTermo(){
+    private void analisaTermo() throws SintaticoException, LexicoException, SemanticoException{
         analisaFator();
         while (token.getSimbolo().equals(Constantes.MULT_SIMBOLO) || token.getSimbolo().equals(Constantes.DIV_SIMBOLO) || token.getSimbolo().equals(Constantes.E_SIMBOLO)) {
             getToken();
@@ -182,7 +201,7 @@ public class Sintatico {
         }
     }
     
-    private void analisaFator(){
+    private void analisaFator() throws SintaticoException, LexicoException, SemanticoException{
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             chamadaFuncao();
             getToken();
@@ -198,22 +217,22 @@ public class Sintatico {
             if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
                 getToken();
             } else {
-                resultado = excecaoSintatico(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else if (token.getSimbolo().equals(Constantes.VERDADEIRO_LEXEMA) || token.getSimbolo().equals(Constantes.FALSO_SIMBOLO)) {
             getToken();
         } else {
-            resultado = excecaoSintatico("Verdadeiro ou Falso", token.getLexema(), token.getLinha());
+            throw new SintaticoException ("Verdadeiro ou Falso", token.getLexema(), token.getLinha());
         }
     }
 
-    private void chamadaFuncao(){
+    private void chamadaFuncao() throws SintaticoException, LexicoException, SemanticoException{
     }
 
-    private void chamadaProcedimento(){
+    private void chamadaProcedimento() throws SintaticoException, LexicoException, SemanticoException{
     }
 
-    private void analisaLeia(){
+    private void analisaLeia() throws SintaticoException, LexicoException, SemanticoException{
         getToken();
         if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
             getToken();
@@ -222,17 +241,17 @@ public class Sintatico {
                     if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
                         getToken();
                     } else {
-                        resultado = excecaoSintatico(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
+                        throw new SintaticoException (Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
                     }
             } else {
-                resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
-            resultado = excecaoSintatico(Constantes.ABRE_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.ABRE_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaEscreva(){
+    private void analisaEscreva() throws SintaticoException, LexicoException, SemanticoException{
         getToken();        
     if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
         getToken();
@@ -241,28 +260,28 @@ public class Sintatico {
                 if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
                     getToken();
                 } else {
-                    resultado = excecaoSintatico(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
+                    throw new SintaticoException (Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
                 }
             } else {
-                resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
-            resultado = excecaoSintatico(Constantes.ABRE_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.ABRE_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaEnquanto(){  
+    private void analisaEnquanto() throws SintaticoException, LexicoException, SemanticoException{  
         getToken();
         analisaExpressao();
         if (token.getSimbolo().equals(Constantes.FACA_SIMBOLO)) {
             getToken();
             analisaComandoSimples();
         } else {
-            resultado = excecaoSintatico(Constantes.FACA_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.FACA_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaSe(){
+    private void analisaSe() throws SintaticoException, LexicoException, SemanticoException{
         getToken();
         analisaExpressao();   
         if (token.getSimbolo().equals(Constantes.ENTAO_SIMBOLO)) {
@@ -274,25 +293,25 @@ public class Sintatico {
             }
         } 
         else {
-            resultado = excecaoSintatico(Constantes.ENTAO_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.ENTAO_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaDeclaracaoProcedimento(){
+    private void analisaDeclaracaoProcedimento() throws SintaticoException, LexicoException, SemanticoException{
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {        
             getToken();
             if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                 analisaBloco();
             } else {
-                resultado = excecaoSintatico(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
+                throw new SintaticoException (Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
-            resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaDeclaracaoFuncao(){
+    private void analisaDeclaracaoFuncao() throws SintaticoException, LexicoException, SemanticoException{
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {                 
             getToken();
@@ -304,19 +323,19 @@ public class Sintatico {
                             analisaBloco();
                         }
                         } else {
-                            resultado = excecaoSintatico("Inteiro ou Booleano", token.getLexema(), token.getLinha()); 
+                            throw new SintaticoException ("Inteiro ou Booleano", token.getLexema(), token.getLinha());
                         }
                 } else {
-                    resultado = excecaoSintatico(Constantes.DOIS_PONTOS_LEXEMA, token.getLexema(), token.getLinha());
+                    throw new SintaticoException (Constantes.DOIS_PONTOS_LEXEMA, token.getLexema(), token.getLinha());
                 }
         } else {
-            resultado = excecaoSintatico(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
+            throw new SintaticoException (Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
-    private void analisaTipo(){
+    private void analisaTipo() throws SintaticoException, LexicoException, SemanticoException{
         if (!(token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO)) && !(token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO))) {
-            resultado = excecaoSintatico("Inteiro ou Booleano", token.getLexema(), token.getLinha());;
+            throw new SintaticoException ("Inteiro ou Booleano", token.getLexema(), token.getLinha());
         }
         getToken();
   }
@@ -326,14 +345,6 @@ public class Sintatico {
     // Pega o proximo token a ser usado
     private void getToken() {
         token = lexico.getToken();
-        System.out.println(token.getLexema());
-    }
-
-    // Quando encontrarmos um erro, pra facilitar geramos essa mensagem, mas o certo
-    // é gerar um Throw.
-    public String excecaoSintatico(String LexemaEsperado, String LexemaEncontrado, int linha) {
-        return ("Erro na linha: " + linha + " | Simbolo esperado: '" + LexemaEsperado + "' | Simbolo encontrado: '"
-                + LexemaEncontrado + "'");
     }
 
     // função que percorre toda o codigo e joga os tokens numa lista
@@ -347,8 +358,12 @@ public class Sintatico {
         }
     }
 
-    public String getResultado(){
-        return resultado;
+    public final String getMessage() {
+        return this.message;
+    }
+    
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Vector<Token> PegaVetor() {

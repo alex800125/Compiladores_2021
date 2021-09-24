@@ -122,26 +122,12 @@ public class Interface extends JFrame {
     }
 
     private class RodaSintatico implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent event) {
             if (event.getSource() == tokens) {
-                /*
-                String msgconsole;
-                Lexico lexico = new Lexico(areaCodigo.getText());
-                msgconsole = lexico.analisadorLexical();
-                console.setText(msgconsole);
-                vetokens = lexico.PegaVetor();
-                */
-
-                
-                String msgconsole;
                 Sintatico sintatico = new Sintatico(areaCodigo.getText()); 
-                sintatico.analisadorSintatico();
-                msgconsole = sintatico.getResultado();
-                console.setText(msgconsole); 
-                vetokens = sintatico.PegaVetor();
-                
+                console.setText(sintatico.getMessage()); 
+                vetokens = sintatico.PegaVetor();              
                 ColocaTokens();
             }
         }

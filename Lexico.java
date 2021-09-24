@@ -288,12 +288,7 @@ public class Lexico {
         return Tokens;
     }
 
-    private void printarTokens() {
-        int i = 0;
-        while (Tokens.size() > i) {
-            System.out.println(
-                    "Simbolo = " + Tokens.elementAt(i).getSimbolo() + " Lexema = " + Tokens.elementAt(i).getLexema());
-            i++;
-        }
+    public final int getLine() {
+        return linha;
     }
 }
