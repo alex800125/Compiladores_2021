@@ -125,9 +125,9 @@ public class Interface extends JFrame {
         @Override
         public void actionPerformed(ActionEvent event) {
             if (event.getSource() == tokens) {
-                Sintatico sintatico = new Sintatico(areaCodigo.getText()); 
-                console.setText(sintatico.getMessage()); 
-                vetokens = sintatico.PegaVetor();              
+                Sintatico sintatico = new Sintatico(areaCodigo.getText());
+                console.setText(sintatico.getMessage());
+                vetokens = sintatico.PegaVetor();
                 ColocaTokens();
             }
         }
