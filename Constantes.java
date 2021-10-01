@@ -116,4 +116,9 @@ public class Constantes {
 
 	public static final String FALSO_SIMBOLO = "s_falso";
 	public static final String FALSO_LEXEMA = "falso";
+
+	// usado quando há algo depois do final, como espaço em branco ou comentários
+	public static final String VAZIO_SIMBOLO = "s_vazio";
+	public static final String VAZIO_LEXEMA = "vazio";
+
 }

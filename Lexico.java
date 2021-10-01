@@ -92,7 +92,7 @@ public class Lexico {
             if (!(carac == ' ' || carac == '	' || carac == '\n')) {
                 linhaerro = "Erro na linha:" + linha;
             }
-            return new Token("", "", linha);
+            return new Token(Constantes.VAZIO_SIMBOLO, Constantes.VAZIO_LEXEMA, linha);
         }
     }
 
@@ -237,7 +237,7 @@ public class Lexico {
                 erro = true;
                 linhaerro = "Erro na linha:" + linha + " operador: " + op;
                 indice = codigo.length();
-                return new Token("", "", linha);
+                return new Token(Constantes.VAZIO_SIMBOLO, Constantes.VAZIO_LEXEMA, linha);
             }
             if (carac == '=') {
                 op += carac;
@@ -247,13 +247,13 @@ public class Lexico {
                 erro = true;
                 linhaerro = "Erro na linha:" + linha + " operador: " + op;
                 indice = codigo.length();
-                return new Token("", "", linha);
+                return new Token(Constantes.VAZIO_SIMBOLO, Constantes.VAZIO_LEXEMA, linha);
             }
         }
         erro = true;
         linhaerro = "Erro na linha:" + linha + " operador: " + op;
         indice = codigo.length();
-        return new Token("", "", linha);
+        return new Token(Constantes.VAZIO_SIMBOLO, Constantes.VAZIO_LEXEMA, linha);
     }
 
     private Token TrataPontuacao(char carac) {
