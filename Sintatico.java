@@ -37,8 +37,7 @@ public class Sintatico {
                     analisaBloco();
                     if (token.getSimbolo().equals(Constantes.PONTO_SIMBOLO)) {
                         getToken();
-                        message = "Compilação concluida com sucesso";
-                        if (token.getSimbolo().equals(Constantes.FIM_SIMBOLO) && token.getLinha() == -1) {
+                        if (token.getSimbolo().equals(Constantes.VAZIO_SIMBOLO)) {
                             message = "Compilação concluida com sucesso";
                         } else {
                             message = "Trecho de código inesperado após final do programa na linha: "
@@ -51,7 +50,6 @@ public class Sintatico {
                     throw new SintaticoException(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
                 }
             } else {
-                System.out.println("erro identificador 1");
                 throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
@@ -94,7 +92,6 @@ public class Sintatico {
                     if (token.getSimbolo().equals(Constantes.VIRGULA_SIMBOLO)) {
                         getToken();
                         if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
-                            System.out.println("erro identificador 2");
                             throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(),
                                     token.getLinha());
                         }
@@ -103,7 +100,6 @@ public class Sintatico {
                     throw new SintaticoException("Virgula ou Dois Pontos", token.getLexema(), token.getLinha());
                 }
             } else {
-                System.out.println("erro identificador 3");
                 throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } while (!(token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)));
@@ -258,7 +254,6 @@ public class Sintatico {
                             token.getLinha());
                 }
             } else {
-                System.out.println("erro identificador 4");
                 throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
@@ -279,7 +274,6 @@ public class Sintatico {
                             token.getLinha());
                 }
             } else {
-                System.out.println("erro identificador 5");
                 throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
@@ -323,7 +317,6 @@ public class Sintatico {
                 throw new SintaticoException(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
-            System.out.println("erro identificador 6");
             throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
@@ -347,7 +340,6 @@ public class Sintatico {
                 throw new SintaticoException(Constantes.DOIS_PONTOS_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else {
-            System.out.println("erro identificador 7");
             throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
