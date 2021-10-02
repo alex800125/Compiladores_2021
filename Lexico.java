@@ -23,10 +23,10 @@ public class Lexico {
             token = PegaToken(caracter);
             return token;
         } else {
-            return new Token(Constantes.FIM_SIMBOLO, Constantes.FIM_LEXEMA, -1);
+            return new Token(Constantes.VAZIO_SIMBOLO, Constantes.VAZIO_LEXEMA, -1);
         }
     }
-
+    
     private char pegaCaracter() {
         return codigo.charAt(indice);
     }

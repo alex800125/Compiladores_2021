@@ -231,7 +231,7 @@ public class Sintatico {
                 || token.getSimbolo().equals(Constantes.FALSO_SIMBOLO)) {
             getToken();
         } else {
-            throw new SintaticoException("Verdadeiro ou Falso", token.getLexema(), token.getLinha());
+            throw new SintaticoException("Identificador, Número ou Expressão para comparar", token.getLexema(), token.getLinha());
         }
     }
 

@@ -104,7 +104,7 @@ public class Interface extends JFrame {
 
         public void actionPerformed(ActionEvent event) {
             try {
-                JFileChooser file = new JFileChooser("D:\\Faculdade/S10/COMPP/Compiladores/Testes/Compilador/Lexico");
+                JFileChooser file = new JFileChooser("D:\\RTL/Compiladores_2021/Testes/Sintatico");
                 //JFileChooser file = new JFileChooser("C:\\Users/alex8/Documents/Compiladores/Compiladores_2021/Testes/Sintatico/Teste_professor");
                 file.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 file.showOpenDialog(null);
