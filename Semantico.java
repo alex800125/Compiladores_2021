@@ -1,3 +1,9 @@
 public class Semantico {
-    // TODO: ainda vai ser editado
+    public Semantico() {
+        TabelaSimbolos tabelaSimbolos = new TabelaSimbolos();
+    }
+
+    public void insereTabela(){
+        // TODO continuar
+    }
 }

@@ -5,10 +5,9 @@ public class TabelaSimbolos {
 
     private List<Simbolos> pilhaSimbolos = new ArrayList<Simbolos>();
 
-    // TODO Por ernquanto é apenas uma previa da Tabela de simbolos
+    // TODO Por enquanto é apenas uma previa da Tabela de simbolos
 
     public void inserirPilhaSimbolos(String lexema, String tipo, int posicao) {
-
         pilhaSimbolos.add(new Simbolos(lexema, tipo, posicao));
     }
 

@@ -9,10 +9,12 @@ public class Sintatico {
     private String message = "";
     private int linhaerro;
     private Lexico lexico;
+    private Semantico semantico;
     Token token = new Token("", "", 0);
 
     public Sintatico(String codigo) {
         lexico = new Lexico(codigo);
+        semantico = new Semantico();
         try {
             analisadorSintatico();
         } catch (SintaticoException e) {
