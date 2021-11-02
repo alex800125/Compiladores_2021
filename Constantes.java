@@ -121,4 +121,8 @@ public class Constantes {
 	public static final String VAZIO_SIMBOLO = "s_vazio";
 	public static final String VAZIO_LEXEMA = "vazio";
 
+	//Constantes para as expressoes
+	public static final String MAIS_UNARIO = "+u";
+	public static final String MENOS_UNARIO = "-u";
+
 }
