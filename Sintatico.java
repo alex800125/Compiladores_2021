@@ -89,7 +89,7 @@ public class Sintatico {
     private void analisaVariaveis() throws SintaticoException, LexicoException, SemanticoException {
         do {
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-                semantico.procuraItemIgual(token);
+                semantico.procuraVariavelIgual(token);
                 semantico.insereTabela(token.getLexema(), Constantes.VAR_LEXEMA, label);
                 getToken();
                 if (token.getSimbolo().equals(Constantes.VIRGULA_SIMBOLO)
@@ -315,7 +315,7 @@ public class Sintatico {
     private void analisaDeclaracaoProcedimento() throws SintaticoException, LexicoException, SemanticoException {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-            semantico.procuraItemIgual(token);
+            semantico.procuraFuncaoProcedimentoIgual(token);
             semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, label);
             getToken();
             if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
@@ -331,7 +331,7 @@ public class Sintatico {
     private void analisaDeclaracaoFuncao() throws SintaticoException, LexicoException, SemanticoException {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-            semantico.procuraItemIgual(token);
+            semantico.procuraFuncaoProcedimentoIgual(token);
             semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, label);
             getToken();
             if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {

@@ -8,13 +8,19 @@ public class Semantico {
         tabelaSimbolos = new TabelaSimbolos();
     }
 
-    public void insereTabela(String lexema, String tipo, int posicao) {
-        tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, posicao);
+    public void insereTabela(String lexema, String tipo, int label) {
+        tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, label);
     }
 
-    public void procuraItemIgual(Token token) throws SemanticoException {
-        if (tabelaSimbolos.procuraItemIgual(token)) {
-            throw new SemanticoException("Variavel, Função ou Procedimento já existente.");
+    public void procuraVariavelIgual(Token token) throws SemanticoException {
+        if (tabelaSimbolos.procuraVariavelIgual(token)) {
+            throw new SemanticoException("Variavel já existente ou Procedimento/Função com mesmo nome.");
+        }
+    }
+
+    public void procuraFuncaoProcedimentoIgual(Token token) throws SemanticoException {
+        if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token, -1)) {
+            throw new SemanticoException("Procedimento/Função já existente.");
         }
     }
 }
