@@ -34,58 +34,54 @@ public class Semantico {
     }
 
     public String expressaoParaPosFixa(Vector<Token> exp) {
-        Vector<String> pilha  = new Vector<String>();
+        Vector<String> pilha = new Vector<String>();
         String saida = "";
 
-        for(int i=0; i<exp.size();i++) {
+        for (int i = 0; i < exp.size(); i++) {
             String aux = exp.get(i).getLexema();
             this.linha = exp.get(i).getLinha();
 
-            if("S_NUMERO".equals(exp.get(i).getSimbolo()) 
-                    || "S_IDENTIFICADOR".equals(exp.get(i).getSimbolo()) 
-                    || "S_VERDADEIRO".equals(exp.get(i).getSimbolo()) 
-                    || "S_FALSO".equals(exp.get(i).getSimbolo())){
+            if (Constantes.NUMERO_SIMBOLO.equals(exp.get(i).getSimbolo())
+                    || Constantes.IDENTIFICADOR_SIMBOLO.equals(exp.get(i).getSimbolo())
+                    || Constantes.VERDADEIRO_SIMBOLO.equals(exp.get(i).getSimbolo())
+                    || Constantes.FALSO_SIMBOLO.equals(exp.get(i).getSimbolo())) {
                 saida = saida.concat(aux + " ");
-            }
-            else if("S_ABRE_PARENTESES".equals(exp.get(i).getSimbolo())){
+            } else if (Constantes.ABRE_PARENTESES_SIMBOLO.equals(exp.get(i).getSimbolo())) {
                 pilha.add(aux);
-            }
-            else if ("S_FECHA_PARENTESES".equals(exp.get(i).getSimbolo())){
-                int top = pilha.size()-1;
-                while(!("(".equals(pilha.get(top)))){
-                    saida=saida.concat(pilha.get(top) + " ");
+            } else if (Constantes.FECHA_PARENTESES_SIMBOLO.equals(exp.get(i).getSimbolo())) {
+                int top = pilha.size() - 1;
+                while (!(Constantes.ABRE_PARENTESES_LEXEMA.equals(pilha.get(top)))) {
+                    saida = saida.concat(pilha.get(top) + " ");
                     pilha.remove(top);
                     top--;
                 }
                 pilha.remove(top);
-            }
-            else{
-                if(pilha.isEmpty()){
+            } else {
+                if (pilha.isEmpty()) {
                     pilha.add(aux);
-                }
-                else{
+                } else {
                     int operador, operadorpilha;
                     int toppilha = pilha.size() - 1;
-                    do{
+                    do {
                         operador = definePrioridaOperador(aux);
                         operadorpilha = definePrioridaOperador(pilha.get(toppilha));
-                        if(operadorpilha>=operador){
+                        if (operadorpilha >= operador) {
                             saida = saida.concat(pilha.get(toppilha) + " ");
                             pilha.remove(toppilha);
                             toppilha--;
                         }
-                    }while(operadorpilha >= operador && !(pilha.isEmpty()));
-                    
-                    if(operadorpilha < operador || pilha.isEmpty()){
+                    } while (operadorpilha >= operador && !(pilha.isEmpty()));
+
+                    if (operadorpilha < operador || pilha.isEmpty()) {
                         pilha.add(aux);
-                    }                   
+                    }
                 }
             }
         }
 
-        int toppilha = pilha.size()-1;
-        if(!pilha.isEmpty()){
-            for(int i = toppilha;i>=0;i--){
+        int toppilha = pilha.size() - 1;
+        if (!pilha.isEmpty()) {
+            for (int i = toppilha; i >= 0; i--) {
                 saida = saida.concat(pilha.get(i) + " ");
                 pilha.remove(i);
             }
@@ -94,8 +90,9 @@ public class Semantico {
         return saida;
     }
 
-    private int definePrioridaOperador(String operador){
-        if(null != operador)switch (operador) {
+    private int definePrioridaOperador(String operador) {
+        if (null != operador)
+            switch (operador) {
             case Constantes.MAIS_UNARIO:
             case Constantes.MENOS_UNARIO:
             case Constantes.NAO_LEXEMA:
@@ -119,7 +116,7 @@ public class Semantico {
                 return 0;
             default:
                 break;
-        }
+            }
         return -1;
     }
 }
