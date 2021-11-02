@@ -52,6 +52,18 @@ public class TabelaSimbolos {
         return pilhaSimbolos.get(0).getLexema().equals(token.getLexema());
     }
 
+    // Remove as variaveis declaradas dentro de uma função/procedimento.
+    public void limparLevel() {
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)
+                    || pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) {
+                break;
+            } else {
+                pilhaSimbolos.remove(i);
+            }
+        }
+    }
+
     // Usado pra debug
     private void exibirPilha() {
         System.out.println("PILHA INICIO");
