@@ -10,6 +10,7 @@ public class Sintatico {
     private int linhaerro;
     private Lexico lexico;
     private Semantico semantico;
+    private int label = 0; 
     Token token = new Token("", "", 0);
 
     public Sintatico(String codigo) {
@@ -88,6 +89,8 @@ public class Sintatico {
     private void analisaVariaveis() throws SintaticoException, LexicoException, SemanticoException {
         do {
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
+                semantico.procuraItemIgual(token);
+                semantico.insereTabela(token.getLexema(), Constantes.VAR_LEXEMA, label);
                 getToken();
                 if (token.getSimbolo().equals(Constantes.VIRGULA_SIMBOLO)
                         || token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
@@ -312,6 +315,8 @@ public class Sintatico {
     private void analisaDeclaracaoProcedimento() throws SintaticoException, LexicoException, SemanticoException {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
+            semantico.procuraItemIgual(token);
+            semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, label);
             getToken();
             if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                 analisaBloco();
@@ -326,6 +331,8 @@ public class Sintatico {
     private void analisaDeclaracaoFuncao() throws SintaticoException, LexicoException, SemanticoException {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
+            semantico.procuraItemIgual(token);
+            semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, label);
             getToken();
             if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
                 getToken();
@@ -359,8 +366,8 @@ public class Sintatico {
     // Pega o proximo token a ser usado
     private void getToken() {
         token = lexico.getToken();
-        System.out.println(
-                "lexema = " + token.getLexema() + " simbolo = " + token.getSimbolo() + " linha = " + token.getLinha());
+        //System.out.println(
+               // "lexema = " + token.getLexema() + " simbolo = " + token.getSimbolo() + " linha = " + token.getLinha());
     }
 
     // função que percorre toda o codigo e joga os tokens numa lista
