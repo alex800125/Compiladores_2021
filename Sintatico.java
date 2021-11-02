@@ -35,6 +35,7 @@ public class Sintatico {
         if (token.getSimbolo().equals(Constantes.PROGRAMA_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
+                semantico.insereTabela(token.getLexema(), Constantes.PROGRAMA_LEXEMA, label);
                 getToken();
                 if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                     analisaBloco();
