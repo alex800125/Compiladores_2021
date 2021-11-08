@@ -10,7 +10,7 @@ public class Sintatico {
     private int linhaerro;
     private Lexico lexico;
     private Semantico semantico;
-    private int label = 0; 
+    private int label = 0;
     Token token = new Token("", "", 0);
 
     public Sintatico(String codigo) {
@@ -237,7 +237,8 @@ public class Sintatico {
                 || token.getSimbolo().equals(Constantes.FALSO_SIMBOLO)) {
             getToken();
         } else {
-            throw new SintaticoException("Identificador, Número ou Expressão para comparar", token.getLexema(), token.getLinha());
+            throw new SintaticoException("Identificador, Número ou Expressão para comparar", token.getLexema(),
+                    token.getLinha());
         }
     }
 
@@ -339,6 +340,7 @@ public class Sintatico {
                 getToken();
                 if (token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO)
                         || token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO)) {
+                    semantico.inserirTipoFuncao(token.getLexema());
                     getToken();
                     if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                         analisaBloco();
@@ -358,6 +360,8 @@ public class Sintatico {
         if (!(token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO))
                 && !(token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO))) {
             throw new SintaticoException("Inteiro ou Booleano", token.getLexema(), token.getLinha());
+        } else {
+            semantico.inserirTipoVariavel(token.getLexema());
         }
         getToken();
     }
@@ -367,8 +371,9 @@ public class Sintatico {
     // Pega o proximo token a ser usado
     private void getToken() {
         token = lexico.getToken();
-        //System.out.println(
-               // "lexema = " + token.getLexema() + " simbolo = " + token.getSimbolo() + " linha = " + token.getLinha());
+        // System.out.println(
+        // "lexema = " + token.getLexema() + " simbolo = " + token.getSimbolo() + "
+        // linha = " + token.getLinha());
     }
 
     // função que percorre toda o codigo e joga os tokens numa lista

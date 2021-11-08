@@ -15,6 +15,14 @@ public class Semantico {
         tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, label);
     }
 
+    public void inserirTipoFuncao(String tipo) {
+        tabelaSimbolos.inserirTipoFuncao(tipo);
+    }
+
+    public void inserirTipoVariavel(String tipo) {
+        tabelaSimbolos.inserirTipoVariavel(tipo);
+    }
+
     public void procuraVariavelIgual(Token token) throws SemanticoException {
         if (tabelaSimbolos.procuraVariavelIgual(token)) {
             throw new SemanticoException("Variavel já existente.");

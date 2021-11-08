@@ -13,6 +13,25 @@ public class TabelaSimbolos {
         exibirPilha();
     }
 
+    public void inserirTipoFuncao(String tipo) {
+        pilhaSimbolos.get(pilhaSimbolos.size() - 1).setBooleanoOuInteiro(tipo);
+        exibirPilha();
+    }
+
+    public void inserirTipoVariavel(String tipo) {
+        for (int i = (pilhaSimbolos.size() - 1); i > 0; i--) {
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)) {
+                if (pilhaSimbolos.get(i).getBooleanoOuInteiro() == null) {
+                    pilhaSimbolos.get(i).setBooleanoOuInteiro(tipo);
+                }
+            } else {
+                break;
+            }
+        }
+
+        exibirPilha();
+    }
+
     // variavel com mesmo nome
     public boolean procuraVariavelIgual(Token token) {
         System.out.println("procuraVariavelIgual - token.lexema = " + token.getLexema());
@@ -68,8 +87,10 @@ public class TabelaSimbolos {
     private void exibirPilha() {
         System.out.println("PILHA INICIO");
         for (int i = 0; i <= pilhaSimbolos.size() - 1; i++) {
-            System.out.println("Pilha - lexema = " + pilhaSimbolos.get(i).getLexema() + " simbolo = "
-                    + pilhaSimbolos.get(i).getTipo() + " label = " + pilhaSimbolos.get(i).getLabel());
+            System.out.println("Pilha - lexema = '" + pilhaSimbolos.get(i).getLexema() + "' / tipo = '"
+                    + pilhaSimbolos.get(i).getTipo() + "' / Booleano/Inteiro = '"
+                    + pilhaSimbolos.get(i).getBooleanoOuInteiro() + "' / label = '" + pilhaSimbolos.get(i).getLabel()
+                    + "'");
         }
         System.out.println("PILHA FIM");
     }
@@ -77,6 +98,7 @@ public class TabelaSimbolos {
     private class Simbolos {
         String lexema;
         String tipo;
+        String booleanoOuInteiro;
         int label;
 
         public Simbolos(String lexema, String tipo, int label) {
@@ -99,6 +121,14 @@ public class TabelaSimbolos {
 
         public void setTipo(String tipo) {
             this.tipo = tipo;
+        }
+
+        public String getBooleanoOuInteiro() {
+            return booleanoOuInteiro;
+        }
+
+        public void setBooleanoOuInteiro(String booleanoOuInteiro) {
+            this.booleanoOuInteiro = booleanoOuInteiro;
         }
 
         public int getLabel() {
