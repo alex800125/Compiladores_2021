@@ -4,20 +4,24 @@ import java.util.List;
 public class TabelaSimbolos {
     private List<Simbolos> pilhaSimbolos;
 
+    // Construtor da classe, inicia a pilha
     public TabelaSimbolos() {
         pilhaSimbolos = new ArrayList<Simbolos>();
     }
 
+    // Insere itens na pilha
     public void inserirPilhaSimbolos(String lexema, String tipo, int label) {
         pilhaSimbolos.add(new Simbolos(lexema, tipo, label));
         exibirPilha();
     }
 
+    // Atribui a uma função o tipo definido na declaração.
     public void inserirTipoFuncao(String tipo) {
         pilhaSimbolos.get(pilhaSimbolos.size() - 1).setBooleanoOuInteiro(tipo);
         exibirPilha();
     }
 
+    // Atribui a uma variavel o tipo definido na declaração.
     public void inserirTipoVariavel(String tipo) {
         for (int i = (pilhaSimbolos.size() - 1); i > 0; i--) {
             if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)) {
@@ -66,6 +70,20 @@ public class TabelaSimbolos {
         return false;
     }
 
+    // Retorna o tipo de uma variavel ou função (só é elegivel para esses dois
+    // metodos)
+    public String procurarTipoVariavelFuncao(String lexema) {
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)
+                    || pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)) {
+                if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
+                    return pilhaSimbolos.get(i).getBooleanoOuInteiro();
+                }
+            }
+        }
+        return null;
+    }
+
     // Verifica se o token tem o mesmo nome do programa
     public boolean procuraNomePrograma(Token token) {
         return pilhaSimbolos.get(0).getLexema().equals(token.getLexema());
@@ -87,7 +105,7 @@ public class TabelaSimbolos {
     private void exibirPilha() {
         System.out.println("PILHA INICIO");
         for (int i = 0; i <= pilhaSimbolos.size() - 1; i++) {
-            System.out.println("Pilha - lexema = '" + pilhaSimbolos.get(i).getLexema() + "' / tipo = '"
+            System.out.println("Pilha: lexema = '" + pilhaSimbolos.get(i).getLexema() + "' / tipo = '"
                     + pilhaSimbolos.get(i).getTipo() + "' / Booleano/Inteiro = '"
                     + pilhaSimbolos.get(i).getBooleanoOuInteiro() + "' / label = '" + pilhaSimbolos.get(i).getLabel()
                     + "'");
@@ -95,6 +113,7 @@ public class TabelaSimbolos {
         System.out.println("PILHA FIM");
     }
 
+    // Classe Simbolos, é uma classe usada para cada elemento da pilha
     private class Simbolos {
         String lexema;
         String tipo;
