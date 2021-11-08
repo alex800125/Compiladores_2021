@@ -1,5 +1,8 @@
 import Exception.SemanticoException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
+import java.util.List;
 
 public class Semantico {
 
@@ -127,4 +130,157 @@ public class Semantico {
             }
         return -1;
     }
+
+    public String retornaTipoExpressao(String exp) {
+        String tipo = separaPosFixaExp(exp);
+
+        if (tipo == "0") {
+            return Constantes.INTEIRO_LEXEMA;
+        } else {
+            return Constantes.BOOLEANO_LEXEMA;
+        }
+    }
+
+    private String separaPosFixaExp(String exp) {
+        String[] aux = exp.split(" ");
+        List<String> explist = new ArrayList<String>(Arrays.asList(aux));
+
+        for (int i = 0; i < explist.size(); i++) {
+            String parc = explist.get(i);
+            if (!(ehOperador(parc)) && !(ehOperadorUnario(parc))) {
+                if (Constantes.INTEIRO_LEXEMA.equals(tabelaSimbolos.procurarTipoVariavelFuncao(parc))) {
+                    explist.set(i, "0");
+                } else if (Constantes.BOOLEANO_LEXEMA.equals(tabelaSimbolos.procurarTipoVariavelFuncao(parc))) {
+                    explist.set(i, "1");
+                } else if (Constantes.VERDADEIRO_LEXEMA.equals(parc) || Constantes.FALSO_LEXEMA.equals(parc)) {
+                    explist.set(i, "1");
+                } else {
+                    explist.set(i, "0");
+                }
+            }
+        }
+
+        for (int j = 0; j < explist.size(); j++) {
+            if (ehOperador(explist.get(j))) {
+                String operacao = retornaTipoOperacao(explist.get(j - 2), explist.get(j - 1), explist.get(j));
+
+                explist.remove(j);
+                explist.remove(j - 1);
+                explist.remove(j - 2);
+                explist.add(j - 2, operacao);
+                j = 0;
+            } else if (ehOperadorUnario(explist.get(j))) {
+                String operacao = retornaTipoOperacao(explist.get(j - 1), null, explist.get(j));
+
+                explist.remove(j);
+                explist.remove(j - 1);
+                explist.add(j - 1, operacao);
+                j = 0;
+            }
+        }
+        return explist.get(0);
+    }
+
+    public String formataExpressao(String exp) {
+        String[] aux = exp.split(" ");
+        String novoexp = "";
+        int auxposicao;
+
+        for (int i = 0; i < aux.length; i++) {
+            if (!tabelaSimbolos.procurarFuncao(aux[i])) { // Passar string para token e chamar a funçao de procurar
+                auxposicao = tabelaSimbolos.procurarPosicaoVariavel(aux[i]);
+                if (auxposicao != -1) {
+                    novoexp = novoexp.concat("p" + auxposicao + " ");
+                } else {
+                    novoexp = novoexp.concat(aux[i] + " ");
+                }
+            } else {
+                int rotres = tabelaSimbolos.procurarRotuloFuncao(aux[i]);
+                novoexp = novoexp.concat("funcao" + rotres + " ");
+            }
+        }
+        return novoexp;
+    }
+
+    private boolean ehOperador(String simbolo) {
+        if (Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo)
+                || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)
+                || Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo)
+                || Constantes.MAIOR_IGUAL_LEXEMA.equals(simbolo) || Constantes.MENOR_IGUAL_LEXEMA.equals(simbolo)
+                || Constantes.IGUAL_LEXEMA.equals(simbolo) || Constantes.DIFERENTE_LEXEMA.equals(simbolo)
+                || Constantes.E_LEXEMA.equals(simbolo) || Constantes.OU_LEXEMA.equals(simbolo)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean ehOperadorUnario(String simbolo) {
+        if (Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)
+                || Constantes.NAO_LEXEMA.equals(simbolo)) {
+            return true;
+        }
+        return false;
+    }
+
+    private String retornaTipoOperacao(String tipo1, String tipo2, String operador) throws SemanticoException {
+        // 0=inteiro, 1=booleano
+        if (ehOperador(operador)) {
+            if (ehOperadorMatematico(operador)) {
+                if (tipo1 == "0" && tipo2 == "0") {
+                    return "0";
+                }
+                throw new SemanticoException("Operações aritméticas (+ | - | * | div) devem ter duas variáveis inteiras.Linha: " + linha);
+            } else if (ehOperadorRelacional(operador)) {
+                if (tipo1 == "0" && tipo2 == "0") {
+                    return "1";
+                }
+                throw new SemanticoException("Operações relacionais(!= | = | < | <= | > | >=) devem ter duas variáveis inteiras.Linha: " + linha);
+            } else {
+                if (tipo1 == "1" && tipo2 == "1") {
+                    return "1";
+                }
+                throw new SemanticoException(
+                        "Operações lógicas (e | ou) devem envolver duas variáveis booleanas.Linha: " + linha);
+            }
+        } else {
+            if (ehOperadorUnarioMat(operador)) {
+                if (tipo1 == "0") {
+                    return "0";
+                }
+                throw new SemanticoException(
+                        "Operações com unários (+ | -) devem ser com variáveis inteiras.Linha: " + linha);
+            } else {
+                if (tipo1 == "1") {
+                    return "1";
+                }
+                throw new SemanticoException(
+                        "Operações com unário não devem ser com variáveis booleanas.Linha: " + linha);
+            }
+        }
+    }
+
+    private boolean ehOperadorUnarioMat(String simbolo){
+        if(Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean ehOperadorMatematico(String simbolo) {
+        if(Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo) 
+                || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)){
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean ehOperadorRelacional(String simbolo) {
+        if (Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo) 
+                || Constantes.MAIOR_IGUAL_LEXEMA.equals(simbolo) || Constantes.MENOR_IGUAL_LEXEMA.equals(simbolo) 
+                || Constantes.IGUAL_LEXEMA.equals(simbolo)|| Constantes.DIFERENTE_LEXEMA.equals(simbolo)) {
+            return true;
+        }
+        return false;
+    }
+
 }

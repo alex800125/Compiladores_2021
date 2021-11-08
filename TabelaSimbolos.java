@@ -84,6 +84,12 @@ public class TabelaSimbolos {
         return null;
     }
 
+    
+    public int procurarPosicaoVariavel(String a){
+        //desenvolver
+        return 1;
+    }
+
     // Verifica se o token tem o mesmo nome do programa
     public boolean procuraNomePrograma(Token token) {
         return pilhaSimbolos.get(0).getLexema().equals(token.getLexema());
