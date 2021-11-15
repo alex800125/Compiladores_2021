@@ -22,7 +22,6 @@ public class Interface extends JFrame {
     private JTextArea areaCodigo;
     private JTextArea console;
     private JLabel tituloConsole;
-    private JTable simbolos;
     private JScrollPane painelPilha;
     private Vector<Token> vetokens = new Vector<Token>();
 
@@ -34,7 +33,7 @@ public class Interface extends JFrame {
         importar.setBounds(50, 20, 100, 30);
         add(importar);
 
-        tokens = new JButton("Gerar Tokens");
+        tokens = new JButton("Rodar");
         tokens.setBounds(200, 20, 150, 30);
         add(tokens);
 
@@ -53,7 +52,7 @@ public class Interface extends JFrame {
 
         JScrollPane posacodigo = new JScrollPane(areaCodigo);
         posacodigo.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        posacodigo.setBounds(70, 80, 500, 650);
+        posacodigo.setBounds(70, 80, 850, 650);
         posacodigo.getVerticalScrollBar().setModel(posLinha.getVerticalScrollBar().getModel());
         add(posacodigo);
 
@@ -70,24 +69,6 @@ public class Interface extends JFrame {
         posainfo.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         posainfo.setBounds(70, 775, 850, 150);
         add(posainfo);
-
-        simbolos = new JTable();
-        simbolos.setModel(
-                new javax.swing.table.DefaultTableModel(new Object[][] {}, new String[] { "Lexema", "Simbolo" }) {
-                    boolean[] canEdit = new boolean[] { false, false };
-
-                    public boolean isCellEditable(int rowIndex, int columnIndex) {
-                        return canEdit[columnIndex];
-                    }
-                });
-
-        simbolos.getTableHeader().setResizingAllowed(false);
-        simbolos.getTableHeader().setReorderingAllowed(false);
-        painelPilha = new JScrollPane(simbolos);
-        painelPilha.setBounds(600, 80, 320, 650);
-        simbolos.setPreferredScrollableViewportSize(simbolos.getPreferredSize());
-        simbolos.setFillsViewportHeight(true);
-        add(painelPilha);
 
         ImportArquivo botaoImport = new ImportArquivo();
         importar.addActionListener(botaoImport);
@@ -128,17 +109,7 @@ public class Interface extends JFrame {
                 Sintatico sintatico = new Sintatico(areaCodigo.getText());
                 console.setText(sintatico.getMessage());
                 vetokens = sintatico.PegaVetor();
-                ColocaTokens();
             }
-        }
-    }
-
-    private void ColocaTokens() {
-        DefaultTableModel pilhasimbolos = (DefaultTableModel) simbolos.getModel();
-        pilhasimbolos.setNumRows(0);
-        for (Token token : vetokens) {
-            Object[] dados = { token.getLexema(), token.getSimbolo() };
-            pilhasimbolos.addRow(dados);
         }
     }
 

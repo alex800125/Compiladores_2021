@@ -90,6 +90,18 @@ public class TabelaSimbolos {
         return 1;
     }
 
+    public Boolean procurarFuncao(String a){
+        //desenvolver
+        return true;
+    }
+
+    public int procurarRotuloFuncao(String a){
+        //desenvolver
+        return 1;
+    }
+
+
+
     // Verifica se o token tem o mesmo nome do programa
     public boolean procuraNomePrograma(Token token) {
         return pilhaSimbolos.get(0).getLexema().equals(token.getLexema());
