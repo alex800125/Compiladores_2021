@@ -100,6 +100,10 @@ public class TabelaSimbolos {
         return 1;
     }
 
+    public void limparNivel(){
+        //desenvolver
+    }
+
 
 
     // Verifica se o token tem o mesmo nome do programa

@@ -299,4 +299,9 @@ public class Semantico {
         return false;
     }
 
+    //chama a função da tabela de simbolos que limpa o nivel 
+    public void limpaNivelTabela(){
+        tabelaSimbolos.limparNivel();
+    }
+
 }
