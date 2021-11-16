@@ -10,27 +10,27 @@ public class Semantico {
 
     private int linha;
 
-    //cria uma instancia da tabela de simbolos
+    // cria uma instancia da tabela de simbolos
     public Semantico() {
         tabelaSimbolos = new TabelaSimbolos();
     }
 
-    //insere um elemento na pilha de simbolos
+    // insere um elemento na pilha de simbolos
     public void insereTabela(String lexema, String tipo, int label) {
         tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, label);
     }
 
-    //insere o tipo da funcao depois de declaradas 
+    // insere o tipo da funcao depois de declaradas
     public void inserirTipoFuncao(String tipo) {
         tabelaSimbolos.inserirTipoFuncao(tipo);
     }
 
-    //insere o tipo da variavel depois de declaradas 
+    // insere o tipo da variavel depois de declaradas
     public void inserirTipoVariavel(String tipo) {
         tabelaSimbolos.inserirTipoVariavel(tipo);
     }
 
-    //função que verifica se uma variavel já foi declarada
+    // função que verifica se uma variavel já foi declarada
     public void procuraVariavelIgual(Token token) throws SemanticoException {
         if (tabelaSimbolos.procuraVariavelIgual(token)) {
             throw new SemanticoException("Variavel já existente.");
@@ -41,7 +41,7 @@ public class Semantico {
         }
     }
 
-    //função que verifica se uma funçao ou procedimento já foi declarado
+    // função que verifica se uma funçao ou procedimento já foi declarado
     public void procuraFuncaoProcedimentoIgual(Token token) throws SemanticoException {
         if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)) {
             throw new SemanticoException("Procedimento/Função já existente.");
@@ -50,7 +50,7 @@ public class Semantico {
         }
     }
 
-    //essa função passa a expressão recebida para o formato pós-fixa
+    // essa função passa a expressão recebida para o formato pós-fixa
     public String expressaoParaPosFixa(Vector<Token> exp) {
         Vector<String> pilha = new Vector<String>();
         String saida = "";
@@ -108,7 +108,7 @@ public class Semantico {
         return saida;
     }
 
-    //retorna a prioridade de cada operador, essa função auxilia na pós-fixa
+    // retorna a prioridade de cada operador, essa função auxilia na pós-fixa
     private int definePrioridaOperador(String operador) {
         if (null != operador)
             switch (operador) {
@@ -139,7 +139,8 @@ public class Semantico {
         return -1;
     }
 
-    //retorna se a expressão é do tipo inteiro ou booleano de acordo com os valores 0=int, 1=boolean
+    // retorna se a expressão é do tipo inteiro ou booleano de acordo com os valores
+    // 0=int, 1=boolean
     public String retornaTipoExpressao(String exp) throws SemanticoException {
         String tipo = separaPosFixaExp(exp);
 
@@ -150,7 +151,7 @@ public class Semantico {
         }
     }
 
-    //verifica se as expressoes são válidas e retorna o tipo de expressão final
+    // verifica se as expressoes são válidas e retorna o tipo de expressão final
     private String separaPosFixaExp(String exp) throws SemanticoException {
         String[] aux = exp.split(" ");
         List<String> explist = new ArrayList<String>(Arrays.asList(aux));
@@ -190,14 +191,14 @@ public class Semantico {
         return explist.get(0);
     }
 
-    //formata a expressao de uma forma que facilite a geração de codigo
-    public String formataExpressao(String exp) {
+    // formata a expressao de uma forma que facilite a geração de codigo
+    public String formataExpressao(String exp) throws SemanticoException {
         String[] aux = exp.split(" ");
         String novoexp = "";
         int auxposicao;
 
         for (int i = 0; i < aux.length; i++) {
-            if (!tabelaSimbolos.procurarFuncao(aux[i])) { // Passar string para token e chamar a funçao de procurar
+            if (!procurarFuncao(aux[i])) { // Passar string para token e chamar a funçao de procurar
                 auxposicao = tabelaSimbolos.procurarPosicaoVariavel(aux[i]);
                 if (auxposicao != -1) {
                     novoexp = novoexp.concat("p" + auxposicao + " ");
@@ -205,14 +206,28 @@ public class Semantico {
                     novoexp = novoexp.concat(aux[i] + " ");
                 }
             } else {
-                int rotres = tabelaSimbolos.procurarRotuloFuncao(aux[i]);
+                int rotres = procurarRotulo(aux[i]);
                 novoexp = novoexp.concat("funcao" + rotres + " ");
             }
         }
         return novoexp;
     }
 
-    //verifica se é algum tipo de operador
+    private boolean procurarFuncao(String nomeFuncao) throws SemanticoException {
+        return tabelaSimbolos.procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
+    }
+
+    private int procurarRotulo(String nomeFuncaoOuProcedimento) throws SemanticoException {
+        int resultado = tabelaSimbolos.procurarRotulo(nomeFuncaoOuProcedimento);
+
+        if (resultado == -1) {
+            throw new SemanticoException("Não foi encontrado uma função ou procedimento com esse nome: "
+                    + nomeFuncaoOuProcedimento + " Linha: " + linha);
+        }
+        return resultado;
+    }
+
+    // verifica se é algum tipo de operador
     private boolean ehOperador(String simbolo) {
         if (Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo)
                 || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)
@@ -225,7 +240,7 @@ public class Semantico {
         return false;
     }
 
-    //verifica se é operador unário e operador not
+    // verifica se é operador unário e operador not
     private boolean ehOperadorUnario(String simbolo) {
         if (Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)
                 || Constantes.NAO_LEXEMA.equals(simbolo)) {
@@ -234,7 +249,8 @@ public class Semantico {
         return false;
     }
 
-    //retorna qual o formato a operação deve ter de acordo com os operadores e o operador
+    // retorna qual o formato a operação deve ter de acordo com os operadores e o
+    // operador
     private String retornaTipoOperacao(String tipo1, String tipo2, String operador) throws SemanticoException {
         // 0=inteiro, 1=booleano
         if (ehOperador(operador)) {
@@ -242,12 +258,15 @@ public class Semantico {
                 if (tipo1 == "0" && tipo2 == "0") {
                     return "0";
                 }
-                throw new SemanticoException("Operações aritméticas (+ | - | * | div) devem ter duas variáveis inteiras.Linha: " + linha);
+                throw new SemanticoException(
+                        "Operações aritméticas (+ | - | * | div) devem ter duas variáveis inteiras.Linha: " + linha);
             } else if (ehOperadorRelacional(operador)) {
                 if (tipo1 == "0" && tipo2 == "0") {
                     return "1";
                 }
-                throw new SemanticoException("Operações relacionais(!= | = | < | <= | > | >=) devem ter duas variáveis inteiras.Linha: " + linha);
+                throw new SemanticoException(
+                        "Operações relacionais(!= | = | < | <= | > | >=) devem ter duas variáveis inteiras.Linha: "
+                                + linha);
             } else {
                 if (tipo1 == "1" && tipo2 == "1") {
                     return "1";
@@ -272,28 +291,28 @@ public class Semantico {
         }
     }
 
-    //verifica se é operador unário
-    private boolean ehOperadorUnarioMat(String simbolo){
-        if(Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)){
+    // verifica se é operador unário
+    private boolean ehOperadorUnarioMat(String simbolo) {
+        if (Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)) {
             return true;
         }
         return false;
     }
 
-    //verifica se é operador aritmetico
+    // verifica se é operador aritmetico
     private boolean ehOperadorMatematico(String simbolo) {
-        if(Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo) 
-                || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)){
+        if (Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo)
+                || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)) {
             return true;
         }
         return false;
     }
-    
-    //verifica se é operador relacional
+
+    // verifica se é operador relacional
     private boolean ehOperadorRelacional(String simbolo) {
-        if (Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo) 
-                || Constantes.MAIOR_IGUAL_LEXEMA.equals(simbolo) || Constantes.MENOR_IGUAL_LEXEMA.equals(simbolo) 
-                || Constantes.IGUAL_LEXEMA.equals(simbolo)|| Constantes.DIFERENTE_LEXEMA.equals(simbolo)) {
+        if (Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo)
+                || Constantes.MAIOR_IGUAL_LEXEMA.equals(simbolo) || Constantes.MENOR_IGUAL_LEXEMA.equals(simbolo)
+                || Constantes.IGUAL_LEXEMA.equals(simbolo) || Constantes.DIFERENTE_LEXEMA.equals(simbolo)) {
             return true;
         }
         return false;

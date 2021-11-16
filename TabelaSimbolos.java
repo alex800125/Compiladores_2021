@@ -10,8 +10,8 @@ public class TabelaSimbolos {
     }
 
     // Insere itens na pilha
-    public void inserirPilhaSimbolos(String lexema, String tipo, int label) {
-        pilhaSimbolos.add(new Simbolos(lexema, tipo, label));
+    public void inserirPilhaSimbolos(String lexema, String tipo, int rotulo) {
+        pilhaSimbolos.add(new Simbolos(lexema, tipo, rotulo));
         exibirPilha();
     }
 
@@ -84,27 +84,20 @@ public class TabelaSimbolos {
         return null;
     }
 
-    
-    public int procurarPosicaoVariavel(String a){
-        //desenvolver
+    public int procurarPosicaoVariavel(String a) {
+        // TODO desenvolver
         return 1;
     }
 
-    public Boolean procurarFuncao(String a){
-        //desenvolver
-        return true;
+    // Recebe o nome da função ou do procedimento e procura o seu rotulo
+    public int procurarRotulo(String funcaoOuProcedimento) {
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getLexema().equals(funcaoOuProcedimento)) {
+                return pilhaSimbolos.get(i).getRotulo();
+            }
+        }
+        return -1;
     }
-
-    public int procurarRotuloFuncao(String a){
-        //desenvolver
-        return 1;
-    }
-
-    public void limparNivel(){
-        //desenvolver
-    }
-
-
 
     // Verifica se o token tem o mesmo nome do programa
     public boolean procuraNomePrograma(Token token) {
@@ -112,7 +105,7 @@ public class TabelaSimbolos {
     }
 
     // Remove as variaveis declaradas dentro de uma função/procedimento.
-    public void limparLevel() {
+    public void limparNivel() {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
             if (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)
                     || pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) {
@@ -129,7 +122,7 @@ public class TabelaSimbolos {
         for (int i = 0; i <= pilhaSimbolos.size() - 1; i++) {
             System.out.println("Pilha: lexema = '" + pilhaSimbolos.get(i).getLexema() + "' / tipo = '"
                     + pilhaSimbolos.get(i).getTipo() + "' / Booleano/Inteiro = '"
-                    + pilhaSimbolos.get(i).getBooleanoOuInteiro() + "' / label = '" + pilhaSimbolos.get(i).getLabel()
+                    + pilhaSimbolos.get(i).getBooleanoOuInteiro() + "' / rotulo = '" + pilhaSimbolos.get(i).getRotulo()
                     + "'");
         }
         System.out.println("PILHA FIM");
@@ -140,12 +133,12 @@ public class TabelaSimbolos {
         String lexema;
         String tipo;
         String booleanoOuInteiro;
-        int label;
+        int rotulo;
 
-        public Simbolos(String lexema, String tipo, int label) {
+        public Simbolos(String lexema, String tipo, int rotulo) {
             this.setLexema(lexema);
             this.setTipo(tipo);
-            this.setLabel(label);
+            this.setRotulo(rotulo);
         }
 
         public String getLexema() {
@@ -172,12 +165,12 @@ public class TabelaSimbolos {
             this.booleanoOuInteiro = booleanoOuInteiro;
         }
 
-        public int getLabel() {
-            return label;
+        public int getRotulo() {
+            return rotulo;
         }
 
-        public void setLabel(int posicao) {
-            this.label = posicao;
+        public void setRotulo(int rotulo) {
+            this.rotulo = rotulo;
         }
     }
 }
