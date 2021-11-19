@@ -9,6 +9,7 @@ public class Semantico {
     TabelaSimbolos tabelaSimbolos;
 
     private int linha;
+    private ArrayList<Token> functok = new ArrayList<Token>();  
 
     // cria uma instancia da tabela de simbolos
     public Semantico() {
@@ -51,8 +52,8 @@ public class Semantico {
     }
 
     // essa função passa a expressão recebida para o formato pós-fixa
-    public String expressaoParaPosFixa(Vector<Token> exp) {
-        Vector<String> pilha = new Vector<String>();
+    public String expressaoParaPosFixa(List<Token> exp) {
+        List<String> pilha = new ArrayList<String>();
         String saida = "";
 
         for (int i = 0; i < exp.size(); i++) {
@@ -149,6 +150,17 @@ public class Semantico {
         } else {
             return Constantes.BOOLEANO_LEXEMA;
         }
+    }
+
+    //procura posição da variavel
+    public String posicaoVariavel(String var){
+        int pos = tabelaSimbolos.procurarPosicaoVariavel(var);
+        return Integer.toString(pos);
+    }
+
+    //funcao auto explicativa
+    public void insereTokenFuncaoLista(Token token){
+        functok.add(token);
     }
 
     // verifica se as expressoes são válidas e retorna o tipo de expressão final
@@ -307,6 +319,32 @@ public class Semantico {
             return true;
         }
         return false;
+    }
+
+    //verifica se a variavel ou funcao existe
+    public boolean procuraVariavelFuncao(Token token) throws SemanticoException{
+        if(!(tabelaSimbolos.procuraVariavelIgual(token) || tabelaSimbolos.procuraFuncaoProcedimentoIgual(token))){
+             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nA variável" + token.getLexema() + "não foi definida");
+        }
+        else{  
+            return !tabelaSimbolos.procuraVariavelIgual(token); //fvar,ttrue
+        }
+    }
+
+    //verifica quem chamou a função ou variavel
+    public void quemChamo(String tipo, String chamou) throws SemanticoException{
+        if("se".equals(chamou) || "enquanto".equals(chamou)){
+            if(!("booleano".equals(tipo))){
+                throw new SemanticoException("Erro.\nA condição no '" + chamou + "não é booleana");
+            }
+        }
+        else{
+            String tipochamou = tabelaSimbolos.procurarTipoVariavelFuncao(chamou);
+            
+            if(!(tipo.equals(tipochamou))){
+                throw new SemanticoException("A expressão do tipo" + tipo + "é incompatível com a variável/função do tipo" + tipochamou + ", por isso não é possível fazer a atribuição");
+            }
+        }
     }
 
     // verifica se é operador aritmetico

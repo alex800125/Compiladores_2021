@@ -18,6 +18,8 @@ public class Sintatico {
     private int rotulo = 0;
     private int contvariavel = 0;
     Token token = new Token("", "", 0);
+    private List<Token> exp = new ArrayList<Token>();
+    private List<String> nomefunc = new ArrayList<String>();
     private List<Integer> varalloc = new ArrayList<Integer>();
     private List<Boolean> flagproc = new ArrayList<Boolean>();
     private List<Boolean> flagfunc = new ArrayList<Boolean>();
@@ -218,18 +220,39 @@ public class Sintatico {
     }
 
     private void analisaAtribChprocedimento() throws SintaticoException, LexicoException, SemanticoException {
+        Token auxtok = token;
         getToken();
         if (token.getSimbolo().equals(Constantes.ATRIBUICAO_SIMBOLO)) {
-            analisaAtribuicao();
+            semantico.procuraVariavelFuncao(auxtok);
+            analisaAtribuicao(auxtok);
         } else {
-            chamadaProcedimento();
+            //chamadaProcedimento(auxtok);
         }
     }
 
-    private void analisaAtribuicao() throws SintaticoException, LexicoException, SemanticoException {
+    private void analisaAtribuicao(Token auxtok) throws SintaticoException, LexicoException, SemanticoException {
         getToken();
         analisaExpressao();
 
+        String aux = semantico.expressaoParaPosFixa(exp);
+        String novoexp = semantico.formataExpressao(aux);
+        geracod.criaCodigo(novoexp);
+
+        String tipo = semantico.retornaTipoExpressao(aux);
+        semantico.quemChamo(tipo, auxtok.getLexema());
+        exp.clear();
+
+        if (flagfunc.get(flagfunc.size() - 1) && (nomefunc.get(nomefunc.size() - 1)).equals(auxtok.getLexema())) {
+            semantico.insereTokenFuncaoLista(auxtok);
+        }
+
+        if (nomefunc.size() > 0) {
+                if (!((nomefunc.get(nomefunc.size() - 1)).equals(auxtok.getLexema()))) {
+                        geracod.criaCodigo("STR", semantico.posicaoVariavel(auxtok.getLexema()), "");	
+                }
+        } else {
+                geracod.criaCodigo("STR", semantico.posicaoVariavel(auxtok.getLexema()), "");
+        }
     }
 
     private void analisaExpressao() throws SintaticoException, LexicoException, SemanticoException {
@@ -240,6 +263,7 @@ public class Sintatico {
                 || token.getSimbolo().equals(Constantes.MENOR_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.MENOR_IGUAL_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.DIFERENTE_SIMBOLO)) {
+            exp.add(token);
             getToken();
             analisaExpressaoSimples();
         }
@@ -247,11 +271,14 @@ public class Sintatico {
 
     private void analisaExpressaoSimples() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.MAIS_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOS_SIMBOLO)) {
+            Token aux = new Token(token.getLexema() + "u", token.getSimbolo(), token.getLinha());
+            exp.add(aux);
             getToken();
         }
         analisaTermo();
         while (token.getSimbolo().equals(Constantes.MAIS_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOS_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.OU_SIMBOLO)) {
+            exp.add(token);
             getToken();
             analisaTermo();
         }
@@ -261,11 +288,12 @@ public class Sintatico {
         analisaFator();
         while (token.getSimbolo().equals(Constantes.MULT_SIMBOLO) || token.getSimbolo().equals(Constantes.DIV_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.E_SIMBOLO)) {
+            exp.add(token);
             getToken();
             analisaFator();
         }
     }
-
+    //parou aqui minha verificação
     private void analisaFator() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             chamadaFuncao();
