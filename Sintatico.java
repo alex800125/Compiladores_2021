@@ -225,7 +225,7 @@ public class Sintatico {
             semantico.procuraVariavelFuncao(auxtok);
             analisaAtribuicao(auxtok);
         } else {
-            //chamadaProcedimento(auxtok);
+            chamadaProcedimento(auxtok);
         }
     }
 
@@ -295,24 +295,34 @@ public class Sintatico {
     //parou aqui minha verificação
     private void analisaFator() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-            chamadaFuncao();
-            getToken();
-
+            int indice = semantico.procurarLexema(token.getLexema());
+            if (semantico.ehFuncaoValida(indice)) {
+                exp.add(token);
+                chamadaFuncao(indice);
+            } else {
+                exp.add(token);
+                getToken();
+            }
         } else if (token.getSimbolo().equals(Constantes.NUMERO_SIMBOLO)) {
+            exp.add(token);
             getToken();
         } else if (token.getSimbolo().equals(Constantes.NAO_SIMBOLO)) {
+            exp.add(token);
             getToken();
             analisaFator();
         } else if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
+            exp.add(token);
             getToken();
             analisaExpressao();
             if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
+                exp.add(token);
                 getToken();
             } else {
                 throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else if (token.getSimbolo().equals(Constantes.VERDADEIRO_LEXEMA)
                 || token.getSimbolo().equals(Constantes.FALSO_SIMBOLO)) {
+            exp.add(token);
             getToken();
         } else {
             throw new SintaticoException("Identificador, Número ou Expressão para comparar", token.getLexema(),
@@ -320,10 +330,16 @@ public class Sintatico {
         }
     }
 
-    private void chamadaFuncao() throws SintaticoException, LexicoException, SemanticoException {
+    private void chamadaFuncao(int indice) throws SintaticoException, LexicoException, SemanticoException {
+        String simlex = semantico.getLexemaSimbolo(indice);        
+        semantico.procurarFuncao(new Token(simlex, "", token.getLinha()));     
+        getToken();
     }
 
-    private void chamadaProcedimento() throws SintaticoException, LexicoException, SemanticoException {
+    private void chamadaProcedimento(Token auxtoken) throws SintaticoException, LexicoException, SemanticoException {
+        semantico.procuraProcedimento(auxtoken);       
+        int rotres = semantico.procuraRotuloProcedimento(auxtoken);
+        geracod.criaCodigo("CALL", "L" + rotres, "");
     }
 
     private void analisaLeia() throws SintaticoException, LexicoException, SemanticoException {

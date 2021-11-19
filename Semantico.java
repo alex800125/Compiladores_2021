@@ -368,6 +368,12 @@ public class Semantico {
         return false;
     }
 
+    //verifica se a função é valida
+    public boolean ehFuncaoValida(int indice){
+        return tabelaSimbolos.ehFuncaoValida(indice);
+        
+    }
+
     // verifica se é operador relacional
     private boolean ehOperadorRelacional(String simbolo) {
         if (Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo)
