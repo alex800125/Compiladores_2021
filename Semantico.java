@@ -389,6 +389,10 @@ public class Semantico {
         return false;
     }
 
+    public String getLexemaSimbolo(int indice) {
+        return tabelaSimbolos.getSimbolo(indice);
+    }
+
     // chama a função da tabela de simbolos que limpa o nivel
     public void limpaNivelTabela() {
         tabelaSimbolos.limparNivel();

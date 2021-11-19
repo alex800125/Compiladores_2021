@@ -84,6 +84,10 @@ public class TabelaSimbolos {
         return null;
     }
 
+    public String getSimbolo(int indice) {
+        return pilhaSimbolos.get(indice).getLexema();
+    }
+
     public int procurarPosicaoVariavel(String variavel) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
             if (pilhaSimbolos.get(i).getLexema().equals(variavel)) {

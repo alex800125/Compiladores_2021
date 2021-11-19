@@ -17,7 +17,7 @@ public class Sintatico {
     private int rotulo = 0;
     private int contvariavel = 0;
     Token token = new Token("", "", 0);
-    private List<Token> exp = new ArrayList<Token>();
+    private List<Token> expressao = new ArrayList<Token>();
     private List<String> nomefunc = new ArrayList<String>();
     private List<Integer> varalloc = new ArrayList<Integer>();
     private List<Boolean> flagproc = new ArrayList<Boolean>();
@@ -233,13 +233,13 @@ public class Sintatico {
         getToken();
         analisaExpressao();
 
-        String aux = semantico.expressaoParaPosFixa(exp);
+        String aux = semantico.expressaoParaPosFixa(expressao);
         String novoexp = semantico.formataExpressao(aux);
         geracod.criaCodigo(novoexp);
 
         String tipo = semantico.retornaTipoExpressao(aux);
         semantico.quemChamo(tipo, auxtok.getLexema());
-        exp.clear();
+        expressao.clear();
 
         if (flagfunc.get(flagfunc.size() - 1) && (nomefunc.get(nomefunc.size() - 1)).equals(auxtok.getLexema())) {
             semantico.insereTokenFuncaoLista(auxtok);
@@ -262,7 +262,7 @@ public class Sintatico {
                 || token.getSimbolo().equals(Constantes.MENOR_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.MENOR_IGUAL_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.DIFERENTE_SIMBOLO)) {
-            exp.add(token);
+                    expressao.add(token);
             getToken();
             analisaExpressaoSimples();
         }
@@ -270,14 +270,14 @@ public class Sintatico {
 
     private void analisaExpressaoSimples() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.MAIS_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOS_SIMBOLO)) {
-            Token aux = new Token(token.getLexema() + "u", token.getSimbolo(), token.getLinha());
-            exp.add(aux);
+            Token aux = new Token(token.getSimbolo(), token.getLexema() + "u", token.getLinha());
+            expressao.add(aux);
             getToken();
         }
         analisaTermo();
         while (token.getSimbolo().equals(Constantes.MAIS_SIMBOLO) || token.getSimbolo().equals(Constantes.MENOS_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.OU_SIMBOLO)) {
-            exp.add(token);
+            expressao.add(token);
             getToken();
             analisaTermo();
         }
@@ -287,42 +287,42 @@ public class Sintatico {
         analisaFator();
         while (token.getSimbolo().equals(Constantes.MULT_SIMBOLO) || token.getSimbolo().equals(Constantes.DIV_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.E_SIMBOLO)) {
-            exp.add(token);
+                    expressao.add(token);
             getToken();
             analisaFator();
         }
     }
-    //parou aqui minha verificação
+    
     private void analisaFator() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             int indice = semantico.procurarLexema(token.getLexema());
             if (semantico.ehFuncaoValida(indice)) {
-                exp.add(token);
+                expressao.add(token);
                 chamadaFuncao(indice);
             } else {
-                exp.add(token);
+                expressao.add(token);
                 getToken();
             }
         } else if (token.getSimbolo().equals(Constantes.NUMERO_SIMBOLO)) {
-            exp.add(token);
+            expressao.add(token);
             getToken();
         } else if (token.getSimbolo().equals(Constantes.NAO_SIMBOLO)) {
-            exp.add(token);
+            expressao.add(token);
             getToken();
             analisaFator();
         } else if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
-            exp.add(token);
+            expressao.add(token);
             getToken();
             analisaExpressao();
             if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
-                exp.add(token);
+                expressao.add(token);
                 getToken();
             } else {
                 throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
             }
         } else if (token.getSimbolo().equals(Constantes.VERDADEIRO_LEXEMA)
                 || token.getSimbolo().equals(Constantes.FALSO_SIMBOLO)) {
-            exp.add(token);
+            expressao.add(token);
             getToken();
         } else {
             throw new SintaticoException("Identificador, Número ou Expressão para comparar", token.getLexema(),
@@ -331,11 +331,11 @@ public class Sintatico {
     }
 
     private void chamadaFuncao(int indice) throws SintaticoException, LexicoException, SemanticoException {
-        String simlex = semantico.getLexemaSimbolo(indice);        
-        semantico.procurarFuncao(new Token(simlex, "", token.getLinha()));     
+        String simbololexico = semantico.getLexemaSimbolo(indice);        
+        semantico.procurarFuncao(simbololexico);     
         getToken();
     }
-
+    //parei aqui
     private void chamadaProcedimento(Token auxtoken) throws SintaticoException, LexicoException, SemanticoException {
         semantico.procuraProcedimento(auxtoken);       
         int rotres = semantico.procuraRotuloProcedimento(auxtoken);
@@ -343,10 +343,13 @@ public class Sintatico {
     }
 
     private void analisaLeia() throws SintaticoException, LexicoException, SemanticoException {
+        geracod.criaCodigo("RD", "", "");
         getToken();
         if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
+                semantico.procuraVariavel(token);
+                geracod.criaCodigo("STR", semantico.posicaoVariavel(token.getLexema()), "");
                 getToken();
                 if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
                     getToken();
