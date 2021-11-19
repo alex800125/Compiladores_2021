@@ -163,13 +163,12 @@ public class Semantico {
         functok.add(token);
     }
 
-    //procura por simbolo especifico e retorna seu indice.
+    // procura por simbolo especifico e retorna seu indice.
     public int procurarLexema(String lexema) throws SemanticoException {
         int resultado = tabelaSimbolos.procurarLexema(lexema);
 
         if (resultado == -1) {
-            throw new SemanticoException(
-                    "Não foi encontrado um simbolo com esse nome: " + lexema + " Linha: " + linha);
+            throw new SemanticoException("Não foi encontrado um simbolo com esse nome: " + lexema + " Linha: " + linha);
         }
         return resultado;
     }
@@ -246,8 +245,14 @@ public class Semantico {
         return resultado;
     }
 
-    private boolean procurarFuncao(String nomeFuncao) {
-        return tabelaSimbolos.procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
+    public boolean procurarFuncao(String nomeFuncao) throws SemanticoException {
+        boolean resultado = tabelaSimbolos
+                .procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
+        if (!resultado) {
+            throw new SemanticoException(
+                    "Não foi encontrado uma função com esse nome: " + nomeFuncao + " Linha: " + linha);
+        }
+        return resultado;
     }
 
     private int procurarRotulo(String nomeFuncaoOuProcedimento) throws SemanticoException {
@@ -368,10 +373,10 @@ public class Semantico {
         return false;
     }
 
-    //verifica se a função é valida
-    public boolean ehFuncaoValida(int indice){
+    // verifica se a função é valida
+    public boolean ehFuncaoValida(int indice) {
         return tabelaSimbolos.ehFuncaoValida(indice);
-        
+
     }
 
     // verifica se é operador relacional
