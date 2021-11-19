@@ -13,7 +13,6 @@ public class Sintatico {
     private Lexico lexico;
     private Semantico semantico;
     private GeradordeCodigo geracod;
-    private int label = 0;
     private int posicao = 0;
     private int rotulo = 0;
     private int contvariavel = 0;
@@ -51,7 +50,7 @@ public class Sintatico {
             geracod.criaCodigo("ALLOC", varalloc.get(varalloc.size() - 1));
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-                semantico.insereTabela(token.getLexema(), Constantes.PROGRAMA_LEXEMA, label, -1);
+                semantico.insereTabela(token.getLexema(), Constantes.PROGRAMA_LEXEMA, -1, -1);
                 getToken();
                 if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                     analisaBloco();
@@ -130,7 +129,7 @@ public class Sintatico {
         do {
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
                 semantico.procuraVariavelIgual(token);
-                semantico.insereTabela(token.getLexema(), Constantes.VAR_LEXEMA, label, posicao);
+                semantico.insereTabela(token.getLexema(), Constantes.VAR_LEXEMA, -1, posicao);
                 contvariavel++;
                 posicao++;
                 getToken();
@@ -397,7 +396,7 @@ public class Sintatico {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             semantico.procuraFuncaoProcedimentoIgual(token);
-            semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, label, -1);
+            semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, rotulo, -1);
             getToken();
             if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                 analisaBloco();
@@ -413,7 +412,7 @@ public class Sintatico {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             semantico.procuraFuncaoProcedimentoIgual(token);
-            semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, label, -1);
+            semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, rotulo, -1);
             getToken();
             if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
                 getToken();

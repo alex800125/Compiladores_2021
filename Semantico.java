@@ -17,8 +17,8 @@ public class Semantico {
     }
 
     // insere um elemento na pilha de simbolos
-    public void insereTabela(String lexema, String tipo, int label, int posicao) {
-        tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, label, posicao);
+    public void insereTabela(String lexema, String tipo, int rotulo, int posicao) {
+        tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, rotulo, posicao);
     }
 
     // insere o tipo da funcao depois de declaradas

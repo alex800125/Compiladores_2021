@@ -118,6 +118,12 @@ public class TabelaSimbolos {
         return pilhaSimbolos.get(0).getLexema().equals(token.getLexema());
     }
 
+    public boolean ehFuncaoValida(int indice) {
+        return pilhaSimbolos.get(indice).getTipo().equals(Constantes.FUNCAO_LEXEMA)
+                && (pilhaSimbolos.get(indice).getBooleanoOuInteiro().equals(Constantes.BOOLEANO_LEXEMA)
+                        || pilhaSimbolos.get(indice).getBooleanoOuInteiro().equals(Constantes.INTEIRO_LEXEMA));
+    }
+
     // Remove as variaveis declaradas dentro de uma função/procedimento.
     public void limparNivel() {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
@@ -144,11 +150,11 @@ public class TabelaSimbolos {
 
     // Classe Simbolos, é uma classe usada para cada elemento da pilha
     private class Simbolos {
-        String lexema;
-        String tipo;
-        String booleanoOuInteiro;
-        int rotulo;
-        int posicao;
+        String lexema; // lexema do simbolo atual
+        String tipo; // é o tipo do simbolo: nome do programa, variavel, função ou procedimento
+        String booleanoOuInteiro; // se for variavel ou função, tem que ser do tipo booleano ou inteiro
+        int rotulo; // usado pra identificar funções e procedimentos
+        int posicao; // usado pra identificar variaveis
 
         public Simbolos(String lexema, String tipo, int rotulo, int posicao) {
             this.setLexema(lexema);
