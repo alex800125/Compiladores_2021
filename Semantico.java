@@ -164,12 +164,12 @@ public class Semantico {
     }
 
     //procura por simbolo especifico e retorna seu indice.
-    public int procurarSimbolo(String simbolo) throws SemanticoException {
-        int resultado = tabelaSimbolos.procurarSimbolo(simbolo);
+    public int procurarLexema(String lexema) throws SemanticoException {
+        int resultado = tabelaSimbolos.procurarLexema(lexema);
 
         if (resultado == -1) {
             throw new SemanticoException(
-                    "Não foi encontrado um simbolo com esse nome: " + simbolo + " Linha: " + linha);
+                    "Não foi encontrado um simbolo com esse nome: " + lexema + " Linha: " + linha);
         }
         return resultado;
     }

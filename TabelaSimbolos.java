@@ -94,9 +94,9 @@ public class TabelaSimbolos {
     }
 
     // procura por um simbolo especifico e retorna sua posição na pilha
-    public int procurarSimbolo(String simbolo) {
+    public int procurarLexema(String lexema) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if (pilhaSimbolos.get(i).getLexema().equals(simbolo)) {
+            if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                 return i;
             }
         }
