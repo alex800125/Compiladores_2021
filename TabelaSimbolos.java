@@ -10,8 +10,8 @@ public class TabelaSimbolos {
     }
 
     // Insere itens na pilha
-    public void inserirPilhaSimbolos(String lexema, String tipo, int rotulo) {
-        pilhaSimbolos.add(new Simbolos(lexema, tipo, rotulo));
+    public void inserirPilhaSimbolos(String lexema, String tipo, int rotulo, int posicao) {
+        pilhaSimbolos.add(new Simbolos(lexema, tipo, rotulo, posicao));
         exibirPilha();
     }
 
@@ -84,9 +84,13 @@ public class TabelaSimbolos {
         return null;
     }
 
-    public int procurarPosicaoVariavel(String a) {
-        // TODO desenvolver
-        return 1;
+    public int procurarPosicaoVariavel(String variavel) {
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getLexema().equals(variavel)) {
+                return pilhaSimbolos.get(i).getPosicao();
+            }
+        }
+        return -1;
     }
 
     // Recebe o nome da função ou do procedimento e procura o seu rotulo
@@ -134,11 +138,13 @@ public class TabelaSimbolos {
         String tipo;
         String booleanoOuInteiro;
         int rotulo;
+        int posicao;
 
-        public Simbolos(String lexema, String tipo, int rotulo) {
+        public Simbolos(String lexema, String tipo, int rotulo, int posicao) {
             this.setLexema(lexema);
             this.setTipo(tipo);
             this.setRotulo(rotulo);
+            this.setPosicao(posicao);
         }
 
         public String getLexema() {
@@ -171,6 +177,14 @@ public class TabelaSimbolos {
 
         public void setRotulo(int rotulo) {
             this.rotulo = rotulo;
+        }
+
+        public int getPosicao() {
+            return posicao;
+        }
+
+        public void setPosicao(int posicao) {
+            this.posicao = posicao;
         }
     }
 }

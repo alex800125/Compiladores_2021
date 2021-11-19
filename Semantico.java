@@ -16,8 +16,8 @@ public class Semantico {
     }
 
     // insere um elemento na pilha de simbolos
-    public void insereTabela(String lexema, String tipo, int label) {
-        tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, label);
+    public void insereTabela(String lexema, String tipo, int label, int posicao) {
+        tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, label, posicao);
     }
 
     // insere o tipo da funcao depois de declaradas
@@ -199,7 +199,7 @@ public class Semantico {
 
         for (int i = 0; i < aux.length; i++) {
             if (!procurarFuncao(aux[i])) { // Passar string para token e chamar a funçao de procurar
-                auxposicao = tabelaSimbolos.procurarPosicaoVariavel(aux[i]);
+                auxposicao = procurarPosicao(aux[i]);
                 if (auxposicao != -1) {
                     novoexp = novoexp.concat("p" + auxposicao + " ");
                 } else {
@@ -213,7 +213,17 @@ public class Semantico {
         return novoexp;
     }
 
-    private boolean procurarFuncao(String nomeFuncao) throws SemanticoException {
+    private int procurarPosicao(String nomeVariavel) throws SemanticoException {
+        int resultado = tabelaSimbolos.procurarPosicaoVariavel(nomeVariavel);
+
+        if (resultado == -1) {
+            throw new SemanticoException(
+                    "Não foi encontrado a variavel com esse nome: " + nomeVariavel + " Linha: " + linha);
+        }
+        return resultado;
+    }
+
+    private boolean procurarFuncao(String nomeFuncao) {
         return tabelaSimbolos.procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
     }
 
@@ -318,8 +328,8 @@ public class Semantico {
         return false;
     }
 
-    //chama a função da tabela de simbolos que limpa o nivel 
-    public void limpaNivelTabela(){
+    // chama a função da tabela de simbolos que limpa o nivel
+    public void limpaNivelTabela() {
         tabelaSimbolos.limparNivel();
     }
 

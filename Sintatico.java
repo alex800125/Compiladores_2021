@@ -14,9 +14,9 @@ public class Sintatico {
     private Semantico semantico;
     private GeradordeCodigo geracod;
     private int label = 0;
-    private int posicao=0;
-    private int rotulo=0;
-    private int contvariavel=0;
+    private int posicao = 0;
+    private int rotulo = 0;
+    private int contvariavel = 0;
     Token token = new Token("", "", 0);
     private List<Integer> varalloc = new ArrayList<Integer>();
     private List<Boolean> flagproc = new ArrayList<Boolean>();
@@ -25,7 +25,7 @@ public class Sintatico {
     public Sintatico(String codigo) {
         lexico = new Lexico(codigo);
         semantico = new Semantico();
-        geracod =  new GeradordeCodigo();
+        geracod = new GeradordeCodigo();
         try {
             analisadorSintatico();
         } catch (SintaticoException e) {
@@ -49,7 +49,7 @@ public class Sintatico {
             geracod.criaCodigo("ALLOC", varalloc.get(varalloc.size() - 1));
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-                semantico.insereTabela(token.getLexema(), Constantes.PROGRAMA_LEXEMA, label);
+                semantico.insereTabela(token.getLexema(), Constantes.PROGRAMA_LEXEMA, label, -1);
                 getToken();
                 if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                     analisaBloco();
@@ -83,17 +83,16 @@ public class Sintatico {
         analisaEtVariaveis();
         analisaSubrotinas();
         analisaComandos();
-        
-        //verifica se há espaços alocados ainda, se sim, desaloca-os
-        //verifica tambem se procedimentos e funçoes em abertos e fecha-os se
-        if(varalloc.size() > 0 && (!flagproc.get(flagproc.size() - 1)) && (!flagfunc.get(flagfunc.size() - 1))) {
-            if(varalloc.get(varalloc.size() - 1) > 0) {
+
+        // verifica se há espaços alocados ainda, se sim, desaloca-os
+        // verifica tambem se procedimentos e funçoes em abertos e fecha-os se
+        if (varalloc.size() > 0 && (!flagproc.get(flagproc.size() - 1)) && (!flagfunc.get(flagfunc.size() - 1))) {
+            if (varalloc.get(varalloc.size() - 1) > 0) {
                 posicao = posicao - varalloc.get(varalloc.size() - 1);
                 geracod.criaCodigo("DALLOC", -1);
                 varalloc.remove(varalloc.size() - 1);
-            }
-            else {
-                    varalloc.remove(varalloc.size() - 1);
+            } else {
+                varalloc.remove(varalloc.size() - 1);
             }
         }
     }
@@ -115,13 +114,13 @@ public class Sintatico {
                 throw new SintaticoException(Constantes.VAR_LEXEMA, token.getLexema(), token.getLinha());
             }
         }
-        
-        //adiciona na lista quantas variaveis foram alocadas
-        //gera o codigo do alloc das posições variaveis
+
+        // adiciona na lista quantas variaveis foram alocadas
+        // gera o codigo do alloc das posições variaveis
         varalloc.add(contvariavel);
         contvariavel = 0;
-        if(varalloc.get(varalloc.size() - 1) > 0) {
-                geracod.criaCodigo("ALLOC", varalloc.get(varalloc.size() - 1));
+        if (varalloc.get(varalloc.size() - 1) > 0) {
+            geracod.criaCodigo("ALLOC", varalloc.get(varalloc.size() - 1));
         }
     }
 
@@ -129,7 +128,7 @@ public class Sintatico {
         do {
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
                 semantico.procuraVariavelIgual(token);
-                semantico.insereTabela(token.getLexema(), Constantes.VAR_LEXEMA, label);
+                semantico.insereTabela(token.getLexema(), Constantes.VAR_LEXEMA, label, posicao);
                 contvariavel++;
                 posicao++;
                 getToken();
@@ -155,9 +154,8 @@ public class Sintatico {
 
     private void analisaSubrotinas() throws SintaticoException, LexicoException, SemanticoException {
         int auxrot = 0, flag = 0;
-        
-        if (token.getSimbolo()==Constantes.FUNCAO_SIMBOLO 
-                || token.getSimbolo()==Constantes.PROCEDIMENTO_SIMBOLO) {
+
+        if (token.getSimbolo() == Constantes.FUNCAO_SIMBOLO || token.getSimbolo() == Constantes.PROCEDIMENTO_SIMBOLO) {
             auxrot = rotulo;
             geracod.criaCodigo("JMP", "L" + rotulo, "");
             rotulo++;
@@ -178,7 +176,7 @@ public class Sintatico {
                 throw new SintaticoException(Constantes.PONTO_VIRGULA_LEXEMA, token.getLexema(), token.getLinha());
             }
         }
-        if(flag==1){
+        if (flag == 1) {
             geracod.criaCodigo("L" + auxrot, "NULL", "");
         }
     }
@@ -371,7 +369,7 @@ public class Sintatico {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             semantico.procuraFuncaoProcedimentoIgual(token);
-            semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, label);
+            semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, label, -1);
             getToken();
             if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                 analisaBloco();
@@ -387,7 +385,7 @@ public class Sintatico {
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             semantico.procuraFuncaoProcedimentoIgual(token);
-            semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, label);
+            semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, label, -1);
             getToken();
             if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
                 getToken();
