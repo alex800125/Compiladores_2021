@@ -93,6 +93,16 @@ public class TabelaSimbolos {
         return -1;
     }
 
+    // procura por um simbolo especifico e retorna sua posição na pilha
+    public int procurarSimbolo(String simbolo) {
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getLexema().equals(simbolo)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // Recebe o nome da função ou do procedimento e procura o seu rotulo
     public int procurarRotulo(String funcaoOuProcedimento) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {

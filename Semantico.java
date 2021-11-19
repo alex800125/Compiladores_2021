@@ -9,7 +9,7 @@ public class Semantico {
     TabelaSimbolos tabelaSimbolos;
 
     private int linha;
-    private ArrayList<Token> functok = new ArrayList<Token>();  
+    private ArrayList<Token> functok = new ArrayList<Token>();
 
     // cria uma instancia da tabela de simbolos
     public Semantico() {
@@ -152,15 +152,26 @@ public class Semantico {
         }
     }
 
-    //procura posição da variavel
-    public String posicaoVariavel(String var){
+    // procura posição da variavel
+    public String posicaoVariavel(String var) {
         int pos = tabelaSimbolos.procurarPosicaoVariavel(var);
         return Integer.toString(pos);
     }
 
-    //funcao auto explicativa
-    public void insereTokenFuncaoLista(Token token){
+    // funcao auto explicativa
+    public void insereTokenFuncaoLista(Token token) {
         functok.add(token);
+    }
+
+    //procura por simbolo especifico e retorna seu indice.
+    public int procurarSimbolo(String simbolo) throws SemanticoException {
+        int resultado = tabelaSimbolos.procurarSimbolo(simbolo);
+
+        if (resultado == -1) {
+            throw new SemanticoException(
+                    "Não foi encontrado um simbolo com esse nome: " + simbolo + " Linha: " + linha);
+        }
+        return resultado;
     }
 
     // verifica se as expressoes são válidas e retorna o tipo de expressão final
@@ -321,28 +332,29 @@ public class Semantico {
         return false;
     }
 
-    //verifica se a variavel ou funcao existe
-    public boolean procuraVariavelFuncao(Token token) throws SemanticoException{
-        if(!(tabelaSimbolos.procuraVariavelIgual(token) || tabelaSimbolos.procuraFuncaoProcedimentoIgual(token))){
-             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nA variável" + token.getLexema() + "não foi definida");
-        }
-        else{  
-            return !tabelaSimbolos.procuraVariavelIgual(token); //fvar,ttrue
+    // verifica se a variavel ou funcao existe
+    public boolean procuraVariavelFuncao(Token token) throws SemanticoException {
+        if (!(tabelaSimbolos.procuraVariavelIgual(token) || tabelaSimbolos.procuraFuncaoProcedimentoIgual(token))) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nA variável" + token.getLexema() + "não foi definida");
+        } else {
+            return !tabelaSimbolos.procuraVariavelIgual(token); // fvar,ttrue
         }
     }
 
-    //verifica quem chamou a função ou variavel
-    public void quemChamo(String tipo, String chamou) throws SemanticoException{
-        if("se".equals(chamou) || "enquanto".equals(chamou)){
-            if(!("booleano".equals(tipo))){
+    // verifica quem chamou a função ou variavel
+    public void quemChamo(String tipo, String chamou) throws SemanticoException {
+        if ("se".equals(chamou) || "enquanto".equals(chamou)) {
+            if (!("booleano".equals(tipo))) {
                 throw new SemanticoException("Erro.\nA condição no '" + chamou + "não é booleana");
             }
-        }
-        else{
+        } else {
             String tipochamou = tabelaSimbolos.procurarTipoVariavelFuncao(chamou);
-            
-            if(!(tipo.equals(tipochamou))){
-                throw new SemanticoException("A expressão do tipo" + tipo + "é incompatível com a variável/função do tipo" + tipochamou + ", por isso não é possível fazer a atribuição");
+
+            if (!(tipo.equals(tipochamou))) {
+                throw new SemanticoException(
+                        "A expressão do tipo" + tipo + "é incompatível com a variável/função do tipo" + tipochamou
+                                + ", por isso não é possível fazer a atribuição");
             }
         }
     }
