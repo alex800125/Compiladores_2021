@@ -332,13 +332,13 @@ public class Sintatico {
 
     private void chamadaFuncao(int indice) throws SintaticoException, LexicoException, SemanticoException {
         String simbololexico = semantico.getLexemaSimbolo(indice);        
-        semantico.procurarFuncao(simbololexico);     
+        semantico.procuraFuncaoProcedimento(simbololexico);     
         getToken();
     }
     //parei aqui
     private void chamadaProcedimento(Token auxtoken) throws SintaticoException, LexicoException, SemanticoException {
-        semantico.procuraProcedimento(auxtoken);       
-        int rotres = semantico.procuraRotuloProcedimento(auxtoken);
+        semantico.procuraFuncaoProcedimento(auxtoken.getLexema());       
+        int rotres = semantico.procurarRotulo(auxtoken.getLexema());
         geracod.criaCodigo("CALL", "L" + rotres, "");
     }
 
@@ -348,7 +348,7 @@ public class Sintatico {
         if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-                semantico.procuraVariavel(token);
+                semantico.procuraVariavelFuncao(token);
                 geracod.criaCodigo("STR", semantico.posicaoVariavel(token.getLexema()), "");
                 getToken();
                 if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {

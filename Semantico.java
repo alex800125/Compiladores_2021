@@ -220,7 +220,7 @@ public class Semantico {
         int auxposicao;
 
         for (int i = 0; i < aux.length; i++) {
-            if (!procurarFuncao(aux[i])) { // Passar string para token e chamar a funçao de procurar
+            if (!procuraFuncaoProcedimento(aux[i])) { // Passar string para token e chamar a funçao de procurar
                 auxposicao = procurarPosicao(aux[i]);
                 if (auxposicao != -1) {
                     novoexp = novoexp.concat("p" + auxposicao + " ");
@@ -245,7 +245,7 @@ public class Semantico {
         return resultado;
     }
 
-    public boolean procurarFuncao(String nomeFuncao) throws SemanticoException {
+    public boolean procuraFuncaoProcedimento(String nomeFuncao) throws SemanticoException {
         boolean resultado = tabelaSimbolos
                 .procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
         if (!resultado) {
@@ -255,7 +255,7 @@ public class Semantico {
         return resultado;
     }
 
-    private int procurarRotulo(String nomeFuncaoOuProcedimento) throws SemanticoException {
+    public int procurarRotulo(String nomeFuncaoOuProcedimento) throws SemanticoException {
         int resultado = tabelaSimbolos.procurarRotulo(nomeFuncaoOuProcedimento);
 
         if (resultado == -1) {
