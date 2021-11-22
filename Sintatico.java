@@ -15,6 +15,7 @@ public class Sintatico {
     private GeradordeCodigo geracod;
     private int posicao = 0;
     private int rotulo = 0;
+    private int auxrotulo = 0;
     private int contvariavel = 0;
     Token token = new Token("", "", 0);
     private List<Token> expressao = new ArrayList<Token>();
@@ -335,7 +336,7 @@ public class Sintatico {
         semantico.procuraFuncaoProcedimento(simbololexico);     
         getToken();
     }
-    //parei aqui
+
     private void chamadaProcedimento(Token auxtoken) throws SintaticoException, LexicoException, SemanticoException {
         semantico.procuraFuncaoProcedimento(auxtoken.getLexema());       
         int rotres = semantico.procurarRotulo(auxtoken.getLexema());
@@ -370,8 +371,17 @@ public class Sintatico {
         if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
+                boolean ehfuncao = semantico.procuraVariavelFuncao(token);
+                if (ehfuncao) {
+					int rotuloresult = semantico.procurarRotulo(token.getLexema());
+					geracod.criaCodigo("CALL", "L" + rotuloresult, "");
+				} else {
+					String posicaovar = semantico.posicaoVariavel(token.getLexema());  
+					geracod.criaCodigo("LDV", posicaovar, "");
+				}
                 getToken();
                 if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
+                    geracod.criaCodigo("PRN", "", "");
                     getToken();
                 } else {
                     throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(),
@@ -386,25 +396,82 @@ public class Sintatico {
     }
 
     private void analisaEnquanto() throws SintaticoException, LexicoException, SemanticoException {
+        int auxrotulo1, auxrotulo2;
+        auxrotulo1 = rotulo;
+        geracod.criaCodigo("L" + rotulo, "NULL", "");
+        rotulo++;
+
         getToken();
         analisaExpressao();
+
+        String auxexpressao = semantico.expressaoParaPosFixa(expressao);
+        String novoexp = semantico.formataExpressao(auxexpressao);
+        geracod.criaCodigo(novoexp);
+        String tipoexpressao = semantico.retornaTipoExpressao(auxexpressao);
+        semantico.quemChamo(tipoexpressao, "enquanto");
+        expressao.clear();
+
         if (token.getSimbolo().equals(Constantes.FACA_SIMBOLO)) {
+            auxrotulo2 = rotulo;
+            geracod.criaCodigo("JMPF", "L" + rotulo, "");
+            rotulo++;
             getToken();
             analisaComandoSimples();
+            geracod.criaCodigo("JMP", "L" + auxrotulo1, "");
+            geracod.criaCodigo("L" + auxrotulo2, "NULL", "");
         } else {
             throw new SintaticoException(Constantes.FACA_LEXEMA, token.getLexema(), token.getLinha());
         }
     }
 
     private void analisaSe() throws SintaticoException, LexicoException, SemanticoException {
+        int auxrotulo1, auxrotulo2;
+        auxrotulo++;
+        
+        if (flagfunc.get(flagfunc.size() - 1)) {
+            semantico.insereTokenFuncaoLista(new Token(token.getSimbolo(), token.getLexema() + auxrotulo, token.getLinha()));
+        }
+
         getToken();
         analisaExpressao();
+
+        String auxexpressao = semantico.expressaoParaPosFixa(expressao);
+        String novoexp = semantico.formataExpressao(auxexpressao);
+        geracod.criaCodigo(novoexp);
+        String tipoexpressao = semantico.retornaTipoExpressao(auxexpressao);
+        semantico.quemChamo(tipoexpressao, "se");
+        expressao.clear();
+
         if (token.getSimbolo().equals(Constantes.ENTAO_SIMBOLO)) {
+            auxrotulo1 = rotulo;
+            geracod.criaCodigo("JMPF", "L" + rotulo, "");
+            rotulo++;
+            
+            if (flagfunc.get(flagfunc.size() - 1)) {
+                semantico.insereTokenFuncaoLista(new Token(token.getSimbolo(), token.getLexema() + auxrotulo, token.getLinha()));
+            }
+            
             getToken();
             analisaComandoSimples();
+
             if (token.getSimbolo().equals(Constantes.SENAO_SIMBOLO)) {
+                auxrotulo2 = rotulo;
+                geracod.criaCodigo("JMP", "L" + rotulo, "");
+                rotulo++;
+
+                geracod.criaCodigo("L" + auxrotulo1, "NULL", "");
+
+                if (flagfunc.get(flagfunc.size() - 1)) {
+                    semantico.insereTokenFuncaoLista(new Token(token.getSimbolo(), token.getLexema() + auxrotulo, token.getLinha()));
+                }
+                    
                 getToken();
                 analisaComandoSimples();
+
+                geracod.criaCodigo("L" + auxrotulo2, "NULL", "");
+            }
+            else{
+                geracod.criaCodigo("L" + auxrotulo1, "NULL", "");
             }
         } else {
             throw new SintaticoException(Constantes.ENTAO_LEXEMA, token.getLexema(), token.getLinha());
