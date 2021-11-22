@@ -247,11 +247,11 @@ public class Sintatico {
         }
 
         if (nomefunc.size() > 0) {
-                if (!((nomefunc.get(nomefunc.size() - 1)).equals(auxtok.getLexema()))) {
-                        geracod.criaCodigo("STR", semantico.posicaoVariavel(auxtok.getLexema()), "");	
-                }
-        } else {
+            if (!((nomefunc.get(nomefunc.size() - 1)).equals(auxtok.getLexema()))) {
                 geracod.criaCodigo("STR", semantico.posicaoVariavel(auxtok.getLexema()), "");
+            }
+        } else {
+            geracod.criaCodigo("STR", semantico.posicaoVariavel(auxtok.getLexema()), "");
         }
     }
 
@@ -263,7 +263,7 @@ public class Sintatico {
                 || token.getSimbolo().equals(Constantes.MENOR_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.MENOR_IGUAL_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.DIFERENTE_SIMBOLO)) {
-                    expressao.add(token);
+            expressao.add(token);
             getToken();
             analisaExpressaoSimples();
         }
@@ -288,12 +288,12 @@ public class Sintatico {
         analisaFator();
         while (token.getSimbolo().equals(Constantes.MULT_SIMBOLO) || token.getSimbolo().equals(Constantes.DIV_SIMBOLO)
                 || token.getSimbolo().equals(Constantes.E_SIMBOLO)) {
-                    expressao.add(token);
+            expressao.add(token);
             getToken();
             analisaFator();
         }
     }
-    
+
     private void analisaFator() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             int indice = semantico.procurarLexema(token.getLexema());
@@ -332,13 +332,13 @@ public class Sintatico {
     }
 
     private void chamadaFuncao(int indice) throws SintaticoException, LexicoException, SemanticoException {
-        String simbololexico = semantico.getLexemaSimbolo(indice);        
-        semantico.procuraFuncaoProcedimento(simbololexico);     
+        String simbololexico = semantico.getLexemaSimbolo(indice);
+        semantico.procuraFuncaoProcedimento(simbololexico);
         getToken();
     }
 
     private void chamadaProcedimento(Token auxtoken) throws SintaticoException, LexicoException, SemanticoException {
-        semantico.procuraFuncaoProcedimento(auxtoken.getLexema());       
+        semantico.procuraFuncaoProcedimento(auxtoken.getLexema());
         int rotres = semantico.procurarRotulo(auxtoken.getLexema());
         geracod.criaCodigo("CALL", "L" + rotres, "");
     }
@@ -478,7 +478,7 @@ public class Sintatico {
         }
 
         if (flagfunc.get(flagfunc.size() - 1)) {
-            semantico.verificaFuncaoLista(String.valueOf(auxrotulo));
+            semantico.verificarListaFuncao(String.valueOf(auxrotulo));
         }
         auxrotulo--;
     }
@@ -532,9 +532,9 @@ public class Sintatico {
                 if (token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO)
                         || token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO)) {
                     if (token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO)) {
-                        semantico.insereTipoFuncao(Constantes.INTEIRO_LEXEMA);
+                        semantico.inserirTipoFuncao(Constantes.INTEIRO_LEXEMA);
                     } else {
-                        semantico.insereTipoFuncao(Constantes.BOOLEANO_LEXEMA);
+                        semantico.inserirTipoFuncao(Constantes.BOOLEANO_LEXEMA);
                     }
                     getToken();
                     if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
@@ -552,7 +552,7 @@ public class Sintatico {
 
         semantico.limpaNivelTabela();
         flagfunc.remove(flagfunc.size() - 1);
-        semantico.funcaoTemReturn(nomefunc.get(nomefunc.size() - 1));
+        semantico.verificarSeFuncaoTemRetorno(nomefunc.get(nomefunc.size() - 1));
         nomefunc.remove(nomefunc.size() - 1);
         geracod.criaCodigo("STR", "0", "");
         if(varalloc.get(varalloc.size() - 1) > 0) {
@@ -562,7 +562,7 @@ public class Sintatico {
         }
         geracod.criaCodigo("RETURN", "", "");
                 
-        semantico.limpaListaFuncao();
+        semantico.limpaNivelTabela();
     }
 
     private void analisaTipo() throws SintaticoException, LexicoException, SemanticoException {

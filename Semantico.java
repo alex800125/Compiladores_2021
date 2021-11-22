@@ -1,15 +1,18 @@
 import Exception.SemanticoException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
 import java.util.List;
 
 public class Semantico {
 
     TabelaSimbolos tabelaSimbolos;
 
+    // possui a lista de tokens de um função (Tokens: Se, Senão, Então)
+    private ArrayList<Token> listaTokenFuncao = new ArrayList<Token>();
+
+    private int linhaSemRetorno;
+    private boolean error;
     private int linha;
-    private ArrayList<Token> functok = new ArrayList<Token>();
 
     // cria uma instancia da tabela de simbolos
     public Semantico() {
@@ -158,17 +161,13 @@ public class Semantico {
         return Integer.toString(pos);
     }
 
-    // funcao auto explicativa
-    public void insereTokenFuncaoLista(Token token) {
-        functok.add(token);
-    }
-
     // procura por simbolo especifico e retorna seu indice.
     public int procurarLexema(String lexema) throws SemanticoException {
         int resultado = tabelaSimbolos.procurarLexema(lexema);
 
         if (resultado == -1) {
-            throw new SemanticoException("Não foi encontrado um simbolo com esse nome: " + lexema + " Linha: " + linha);
+            throw new SemanticoException(
+                    "Não foi encontrado um simbolo com esse nome: '" + lexema + "' Linha: " + linha);
         }
         return resultado;
     }
@@ -240,7 +239,7 @@ public class Semantico {
 
         if (resultado == -1) {
             throw new SemanticoException(
-                    "Não foi encontrado a variavel com esse nome: " + nomeVariavel + " Linha: " + linha);
+                    "Não foi encontrado a variavel com esse nome: '" + nomeVariavel + "' Linha: " + linha);
         }
         return resultado;
     }
@@ -250,7 +249,7 @@ public class Semantico {
                 .procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
         if (!resultado) {
             throw new SemanticoException(
-                    "Não foi encontrado uma função com esse nome: " + nomeFuncao + " Linha: " + linha);
+                    "Não foi encontrado uma função com esse nome: '" + nomeFuncao + "' Linha: " + linha);
         }
         return resultado;
     }
@@ -341,7 +340,7 @@ public class Semantico {
     public boolean procuraVariavelFuncao(Token token) throws SemanticoException {
         if (!(tabelaSimbolos.procuraVariavelIgual(token) || tabelaSimbolos.procuraFuncaoProcedimentoIgual(token))) {
             throw new SemanticoException(
-                    "Erro linha: " + token.getLinha() + "\nA variável" + token.getLexema() + "não foi definida");
+                    "Erro linha: " + token.getLinha() + "\nA variável '" + token.getLexema() + "' não foi definida");
         } else {
             return !tabelaSimbolos.procuraVariavelIgual(token); // fvar,ttrue
         }
@@ -358,8 +357,8 @@ public class Semantico {
 
             if (!(tipo.equals(tipochamou))) {
                 throw new SemanticoException(
-                        "A expressão do tipo" + tipo + "é incompatível com a variável/função do tipo" + tipochamou
-                                + ", por isso não é possível fazer a atribuição");
+                        "A expressão do tipo '" + tipo + "' é incompatível com a variável/função do tipo '" + tipochamou
+                                + "', por isso não é possível fazer a atribuição");
             }
         }
     }
@@ -398,14 +397,94 @@ public class Semantico {
         tabelaSimbolos.limparNivel();
     }
 
-    //seta a variavel linha
-    public void setLinha(int linha){
-        this.linha=linha;
+    // funcao auto explicativa
+    public void insereTokenFuncaoLista(Token token) {
+        listaTokenFuncao.add(token);
     }
 
-    //limpa a lista de funçao functok
-    public void limpaListaFuncao(){
-        functok.clear();
+    public void verificarListaFuncao(String label) {
+        Token auxToken = null;
+
+        boolean conditionalThenReturn = false;
+        boolean conditionalElseReturn = false;
+        int thenPosition = -1;
+        int elsePosition = thenPosition;
+
+        for (int i = 0; i < listaTokenFuncao.size(); i++) {
+            if (Constantes.SE_SIMBOLO.equals(listaTokenFuncao.get(i).getSimbolo())
+                    && listaTokenFuncao.get(i).getLexema().contains(label)) {
+                listaTokenFuncao.remove(i);
+                i--;
+            } else if (Constantes.ENTAO_SIMBOLO.equals(listaTokenFuncao.get(i).getSimbolo())
+                    && listaTokenFuncao.get(i).getLexema().contains(label)) {
+                if (listaTokenFuncao.size() > (i + 1)) {
+                    if (Constantes.IDENTIFICADOR_SIMBOLO.equals(listaTokenFuncao.get(i + 1).getSimbolo())) {
+                        conditionalThenReturn = true;
+                        auxToken = listaTokenFuncao.get(i + 1);
+                    }
+                } else {
+                    linhaSemRetorno = listaTokenFuncao.get(i).getLinha();
+                }
+                thenPosition = i;
+            } else if (Constantes.SENAO_SIMBOLO.equals(listaTokenFuncao.get(i).getSimbolo())
+                    && listaTokenFuncao.get(i).getLexema().contains(label)) {
+                if (listaTokenFuncao.size() > (i + 1)) {
+                    if (Constantes.IDENTIFICADOR_SIMBOLO.equals(listaTokenFuncao.get(i + 1).getSimbolo())) {
+                        conditionalElseReturn = true;
+                        elsePosition = i + 1;
+                        auxToken = listaTokenFuncao.get(i + 1);
+                    }
+                } else {
+                    linhaSemRetorno = listaTokenFuncao.get(i).getLinha();
+                    elsePosition = i;
+                }
+
+                if (elsePosition == (-1))
+                    elsePosition = listaTokenFuncao.size() - 1;
+
+                removeIf(elsePosition, thenPosition, (conditionalThenReturn && conditionalElseReturn), auxToken);
+            }
+        }
     }
 
+    public boolean verificarSeFuncaoTemRetorno(String nameOfFunction) throws SemanticoException {
+        int aux = 0;
+
+        for (int i = 0; i < listaTokenFuncao.size(); i++) {
+            if (nameOfFunction.equals(listaTokenFuncao.get(i).getLexema())) {
+                aux++;
+                if (aux == listaTokenFuncao.size()) {
+                    return true;
+                }
+            }
+        }
+
+        error = true;
+        if (linhaSemRetorno != 0)
+            linha = linhaSemRetorno;
+
+        throw new SemanticoException("Nem todos os caminhos da função possuem retorno." + "\nLinha: " + linha);
+    }
+
+    private void removeIf(int start, int end, boolean functionReturn, Token tokenFunction) {
+        for (int i = start; i >= end; i--) {
+            listaTokenFuncao.remove(i);
+        }
+
+        if (functionReturn && tokenFunction != null) {
+            listaTokenFuncao.add(tokenFunction);
+        }
+    }
+
+    public void setLinha(int linha) {
+        this.linha = linha;
+    }
+
+    public int getLinha() {
+        return linha;
+    }
+
+    public boolean haErro() {
+        return error;
+    }
 }
