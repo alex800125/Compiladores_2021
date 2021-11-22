@@ -476,13 +476,21 @@ public class Sintatico {
         } else {
             throw new SintaticoException(Constantes.ENTAO_LEXEMA, token.getLexema(), token.getLinha());
         }
+
+        if (flagfunc.get(flagfunc.size() - 1)) {
+            semantico.verificaFuncaoLista(String.valueOf(auxrotulo));
+        }
+        auxrotulo--;
     }
 
     private void analisaDeclaracaoProcedimento() throws SintaticoException, LexicoException, SemanticoException {
+        flagproc.add(true);
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             semantico.procuraFuncaoProcedimentoIgual(token);
             semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, rotulo, -1);
+            geracod.criaCodigo("L" + rotulo, "NULL", "");
+            rotulo++;    
             getToken();
             if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                 analisaBloco();
@@ -492,19 +500,42 @@ public class Sintatico {
         } else {
             throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
         }
+
+        semantico.limpaNivelTabela();
+
+        if (varalloc.get(varalloc.size() - 1) > 0) {
+            posicao = posicao - varalloc.get(varalloc.size() - 1);
+            geracod.criaCodigo("DALLOC", -1);
+            varalloc.remove(varalloc.size() - 1);
+        }
+        else {
+            varalloc.remove(varalloc.size() - 1);
+        }
+
+        geracod.criaCodigo("RETURN", "", "");
+        flagproc.remove(flagproc.size() - 1);
     }
 
     private void analisaDeclaracaoFuncao() throws SintaticoException, LexicoException, SemanticoException {
+        flagfunc.add(true);
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
             semantico.procuraFuncaoProcedimentoIgual(token);
             semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, rotulo, -1);
+            geracod.criaCodigo("L" + rotulo, "NULL", "");
+            rotulo++;
+            nomefunc.add(token.getLexema());
+            semantico.setLinha(token.getLinha());
             getToken();
             if (token.getSimbolo().equals(Constantes.DOIS_PONTOS_SIMBOLO)) {
                 getToken();
                 if (token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO)
                         || token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO)) {
-                    semantico.inserirTipoFuncao(token.getLexema());
+                    if (token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO)) {
+                        semantico.insereTipoFuncao(Constantes.INTEIRO_LEXEMA);
+                    } else {
+                        semantico.insereTipoFuncao(Constantes.BOOLEANO_LEXEMA);
+                    }
                     getToken();
                     if (token.getSimbolo().equals(Constantes.PONTO_VIRGULA_SIMBOLO)) {
                         analisaBloco();
@@ -518,6 +549,20 @@ public class Sintatico {
         } else {
             throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
         }
+
+        semantico.limpaNivelTabela();
+        flagfunc.remove(flagfunc.size() - 1);
+        semantico.funcaoTemReturn(nomefunc.get(nomefunc.size() - 1));
+        nomefunc.remove(nomefunc.size() - 1);
+        geracod.criaCodigo("STR", "0", "");
+        if(varalloc.get(varalloc.size() - 1) > 0) {
+                posicao = posicao - varalloc.get(varalloc.size() - 1);
+                geracod.criaCodigo("DALLOC", -1);
+                varalloc.remove(varalloc.size() - 1);
+        }
+        geracod.criaCodigo("RETURN", "", "");
+                
+        semantico.limpaListaFuncao();
     }
 
     private void analisaTipo() throws SintaticoException, LexicoException, SemanticoException {

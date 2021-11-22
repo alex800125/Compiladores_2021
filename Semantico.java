@@ -398,4 +398,14 @@ public class Semantico {
         tabelaSimbolos.limparNivel();
     }
 
+    //seta a variavel linha
+    public void setLinha(int linha){
+        this.linha=linha;
+    }
+
+    //limpa a lista de funçao functok
+    public void limpaListaFuncao(){
+        functok.clear();
+    }
+
 }
