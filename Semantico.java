@@ -338,7 +338,7 @@ public class Semantico {
 
     // verifica se a variavel ou funcao existe
     public boolean procuraVariavelFuncao(Token token) throws SemanticoException {
-        if (!(tabelaSimbolos.procuraVariavelIgual(token) || tabelaSimbolos.procuraFuncaoProcedimentoIgual(token))) {
+        if (!(tabelaSimbolos.procuraVariavelIgual(token) || !(tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)))) {
             throw new SemanticoException(
                     "Erro linha: " + token.getLinha() + "\nA variável '" + token.getLexema() + "' não foi definida");
         } else {
