@@ -60,6 +60,9 @@ public class Sintatico {
                     if (token.getSimbolo().equals(Constantes.PONTO_SIMBOLO)) {
                         getToken();
                         if (token.getSimbolo().equals(Constantes.VAZIO_SIMBOLO)) {
+                            posicao = posicao-varalloc.get(varalloc.size() - 1);
+                            geracod.criaCodigo("DALLOC", -1);
+                            varalloc.remove(varalloc.size() - 1);
                             geracod.criaCodigo("HLT", "", "");
                             geracod.criaArquivo();
                             message = "Compilação concluida com sucesso";
