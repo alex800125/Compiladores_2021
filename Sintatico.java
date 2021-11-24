@@ -25,6 +25,8 @@ public class Sintatico {
     private List<Boolean> flagfunc = new ArrayList<Boolean>();
 
     public Sintatico(String codigo) {
+        flagproc.add(false);
+        flagfunc.add(false);
         lexico = new Lexico(codigo);
         semantico = new Semantico();
         geracod = new GeradordeCodigo();
