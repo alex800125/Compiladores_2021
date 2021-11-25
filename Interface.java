@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.*;
 import java.util.Vector;
-import javax.swing.table.DefaultTableModel;
 
 public class Interface extends JFrame {
 
@@ -22,8 +21,6 @@ public class Interface extends JFrame {
     private JTextArea areaCodigo;
     private JTextArea console;
     private JLabel tituloConsole;
-    private JScrollPane painelPilha;
-    private Vector<Token> vetokens = new Vector<Token>();
 
     public Interface() {
         super("Analizador Lexico");
@@ -110,7 +107,7 @@ public class Interface extends JFrame {
             if (event.getSource() == tokens) {
                 Sintatico sintatico = new Sintatico(areaCodigo.getText());
                 console.setText(sintatico.getMessage());
-                vetokens = sintatico.PegaVetor();
+                sintatico.PegaVetor();
             }
         }
     }

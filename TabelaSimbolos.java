@@ -18,7 +18,6 @@ public class TabelaSimbolos {
     // Atribui a uma função o tipo definido na declaração.
     public void inserirTipoFuncao(String tipo) {
         pilhaSimbolos.get(pilhaSimbolos.size() - 1).setBooleanoOuInteiro(tipo);
-        //exibirPilha();
     }
 
     // Atribui a uma variavel o tipo definido na declaração.
@@ -32,8 +31,6 @@ public class TabelaSimbolos {
                 break;
             }
         }
-
-        //exibirPilha();
     }
 
     // variavel com mesmo nome
@@ -49,6 +46,17 @@ public class TabelaSimbolos {
                 return false;
             }
             if (pilhaSimbolos.get(i).getLexema().equals(token.getLexema())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean procuraVariavel(Token token) {
+        System.out.println("procuraVariavel - token.lexema = " + token.getLexema());
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getLexema().equals(token.getLexema())
+                    && pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)) {
                 return true;
             }
         }
@@ -124,7 +132,6 @@ public class TabelaSimbolos {
 
     // Recebe o nome da função ou do procedimento e procura o seu rotulo
     public int procurarRotulo(String funcaoOuProcedimento) {
-        
         exibirPilha();
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
             if (pilhaSimbolos.get(i).getLexema().equals(funcaoOuProcedimento)) {

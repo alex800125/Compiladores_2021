@@ -36,7 +36,8 @@ public class Semantico {
 
     // função que verifica se uma variavel já foi declarada
     public void procuraVariavelIgual(Token token) throws SemanticoException {
-        System.out.println("procuraVariavelIgual token.getLexema = " + token.getLexema() + " token.getSimbolo" + token.getSimbolo());
+        System.out.println("procuraVariavelIgual token.getLexema = " + token.getLexema() + " token.getSimbolo"
+                + token.getSimbolo());
         if (tabelaSimbolos.procuraVariavelIgual(token)) {
             throw new SemanticoException("Variavel já existente.");
         } else if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)) {
@@ -48,7 +49,8 @@ public class Semantico {
 
     // função que verifica se uma funçao ou procedimento já foi declarado
     public void procuraFuncaoProcedimentoIgual(Token token) throws SemanticoException {
-        System.out.println("procuraFuncaoProcedimentoIgual token.getLexema = " + token.getLexema() + " token.getSimbolo" + token.getSimbolo());
+        System.out.println("procuraFuncaoProcedimentoIgual token.getLexema = " + token.getLexema() + " token.getSimbolo"
+                + token.getSimbolo());
         if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)) {
             throw new SemanticoException("Procedimento/Função já existente.");
         } else if (tabelaSimbolos.procuraNomePrograma(token)) {
@@ -351,17 +353,17 @@ public class Semantico {
     // verifica se a variavel ou funcao existe
     public boolean procuraVariavelFuncao(Token token) throws SemanticoException {
         System.out.println("procuraVariavelFuncao token.getLexema = " + token.getLexema());
-        if (!(tabelaSimbolos.procuraVariavelIgual(token) || !(tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)))) {
-            throw new SemanticoException(
-                    "Erro linha: " + token.getLinha() + "\nA variável '" + token.getLexema() + "' não foi definida");
+        if (!(tabelaSimbolos.procuraVariavel(token) || procurarFuncao(token.getLexema()))) {
+            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nA variável ou função '"
+                    + token.getLexema() + "' não foi definida");
         } else {
-            return !tabelaSimbolos.procuraVariavelIgual(token); // fvar,ttrue
+            return true;
         }
     }
 
     public boolean procurarFuncao(String funcao) throws SemanticoException {
-        System.out.println("procuraVariavelFuncao token.getLexema = " + funcao);
-            return tabelaSimbolos.procuraFuncao(funcao);
+        System.out.println("procuraFuncao funcao = " + funcao);
+        return tabelaSimbolos.procuraFuncao(funcao);
     }
 
     // verifica quem chamou a função ou variavel
@@ -473,8 +475,6 @@ public class Semantico {
     public boolean verificarSeFuncaoTemRetorno(String nameOfFunction) throws SemanticoException {
         System.out.println("verificarSeFuncaoTemRetorno nameOfFunction = " + nameOfFunction);
         int aux = 0;
-        
-        exibirListaTokenFuncao();
 
         for (int i = 0; i < listaTokenFuncao.size(); i++) {
             if (nameOfFunction.equals(listaTokenFuncao.get(i).getLexema())) {
@@ -493,7 +493,8 @@ public class Semantico {
     }
 
     private void removeIf(int start, int end, boolean functionReturn, Token tokenFunction) {
-        System.out.println("removeIf start = " + start + " / end = " + end + " / functionReturn = " + functionReturn + " / tokenFunction = " + tokenFunction);
+        System.out.println("removeIf start = " + start + " / end = " + end + " / functionReturn = " + functionReturn
+                + " / tokenFunction = " + tokenFunction);
         for (int i = start; i >= end; i--) {
             listaTokenFuncao.remove(i);
         }
@@ -503,7 +504,8 @@ public class Semantico {
         }
     }
 
-    void exibirListaTokenFuncao(){
+    // usado pra debug
+    void exibirListaTokenFuncao() {
         System.out.println("\nexibirListaTokenFuncao listaTokenFuncao.size = " + listaTokenFuncao.size());
 
         for (int i = 0; i < listaTokenFuncao.size(); i++) {
