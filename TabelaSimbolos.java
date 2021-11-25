@@ -18,7 +18,7 @@ public class TabelaSimbolos {
     // Atribui a uma função o tipo definido na declaração.
     public void inserirTipoFuncao(String tipo) {
         pilhaSimbolos.get(pilhaSimbolos.size() - 1).setBooleanoOuInteiro(tipo);
-        exibirPilha();
+        //exibirPilha();
     }
 
     // Atribui a uma variavel o tipo definido na declaração.
@@ -33,7 +33,7 @@ public class TabelaSimbolos {
             }
         }
 
-        exibirPilha();
+        //exibirPilha();
     }
 
     // variavel com mesmo nome
@@ -63,6 +63,21 @@ public class TabelaSimbolos {
             if (!pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)
                     && !pilhaSimbolos.get(i).getTipo().equals(Constantes.PROGRAMA_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(token.getLexema())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean procuraFuncao(String funcao) {
+        System.out.println("procuraFuncao - token.lexema = " + funcao);
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            // só executo se não for uma variavel, caso seja eu apenas pulo ela.
+            if (!pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)
+                    && !pilhaSimbolos.get(i).getTipo().equals(Constantes.PROGRAMA_LEXEMA)
+                    && !pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) {
+                if (pilhaSimbolos.get(i).getLexema().equals(funcao)) {
                     return true;
                 }
             }
@@ -109,6 +124,8 @@ public class TabelaSimbolos {
 
     // Recebe o nome da função ou do procedimento e procura o seu rotulo
     public int procurarRotulo(String funcaoOuProcedimento) {
+        
+        exibirPilha();
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
             if (pilhaSimbolos.get(i).getLexema().equals(funcaoOuProcedimento)) {
                 return pilhaSimbolos.get(i).getRotulo();
@@ -142,14 +159,14 @@ public class TabelaSimbolos {
 
     // Usado pra debug
     private void exibirPilha() {
-        System.out.println("PILHA INICIO");
+        System.out.println("\nPILHA INICIO");
         for (int i = 0; i <= pilhaSimbolos.size() - 1; i++) {
             System.out.println("Pilha: lexema = '" + pilhaSimbolos.get(i).getLexema() + "' / tipo = '"
                     + pilhaSimbolos.get(i).getTipo() + "' / Booleano/Inteiro = '"
                     + pilhaSimbolos.get(i).getBooleanoOuInteiro() + "' / rotulo = '" + pilhaSimbolos.get(i).getRotulo()
                     + "'");
         }
-        System.out.println("PILHA FIM");
+        System.out.println("PILHA FIM\n");
     }
 
     // Classe Simbolos, é uma classe usada para cada elemento da pilha

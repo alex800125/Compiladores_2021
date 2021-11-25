@@ -36,6 +36,7 @@ public class Semantico {
 
     // função que verifica se uma variavel já foi declarada
     public void procuraVariavelIgual(Token token) throws SemanticoException {
+        System.out.println("procuraVariavelIgual token.getLexema = " + token.getLexema() + " token.getSimbolo" + token.getSimbolo());
         if (tabelaSimbolos.procuraVariavelIgual(token)) {
             throw new SemanticoException("Variavel já existente.");
         } else if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)) {
@@ -47,6 +48,7 @@ public class Semantico {
 
     // função que verifica se uma funçao ou procedimento já foi declarado
     public void procuraFuncaoProcedimentoIgual(Token token) throws SemanticoException {
+        System.out.println("procuraFuncaoProcedimentoIgual token.getLexema = " + token.getLexema() + " token.getSimbolo" + token.getSimbolo());
         if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)) {
             throw new SemanticoException("Procedimento/Função já existente.");
         } else if (tabelaSimbolos.procuraNomePrograma(token)) {
@@ -56,6 +58,7 @@ public class Semantico {
 
     // essa função passa a expressão recebida para o formato pós-fixa
     public String expressaoParaPosFixa(List<Token> exp) {
+        System.out.println("expressaoParaPosFixa exp.size = " + exp.size());
         List<String> pilha = new ArrayList<String>();
         String saida = "";
 
@@ -146,6 +149,7 @@ public class Semantico {
     // retorna se a expressão é do tipo inteiro ou booleano de acordo com os valores
     // 0=int, 1=boolean
     public String retornaTipoExpressao(String exp) throws SemanticoException {
+        System.out.println("retornaTipoExpressao exp = " + exp);
         String tipo = separaPosFixaExp(exp);
 
         if (tipo == "0") {
@@ -157,12 +161,14 @@ public class Semantico {
 
     // procura posição da variavel
     public String posicaoVariavel(String var) {
+        System.out.println("posicaoVariavel var = " + var);
         int pos = tabelaSimbolos.procurarPosicaoVariavel(var);
         return Integer.toString(pos);
     }
 
     // procura por simbolo especifico e retorna seu indice.
     public int procurarLexema(String lexema) throws SemanticoException {
+        System.out.println("procurarLexema lexema = " + lexema);
         int resultado = tabelaSimbolos.procurarLexema(lexema);
 
         if (resultado == -1) {
@@ -174,6 +180,7 @@ public class Semantico {
 
     // verifica se as expressoes são válidas e retorna o tipo de expressão final
     private String separaPosFixaExp(String exp) throws SemanticoException {
+        System.out.println("separaPosFixaExp exp = " + exp);
         String[] aux = exp.split(" ");
         List<String> explist = new ArrayList<String>(Arrays.asList(aux));
 
@@ -214,12 +221,15 @@ public class Semantico {
 
     // formata a expressao de uma forma que facilite a geração de codigo
     public String formataExpressao(String exp) throws SemanticoException {
+        System.out.println("formataExpressao exp = " + exp);
         String[] aux = exp.split(" ");
         String novoexp = "";
         int auxposicao;
 
+        System.out.println("formataExpressao loop\n");
         for (int i = 0; i < aux.length; i++) {
-            if (!procuraFuncaoProcedimento(aux[i])) { // Passar string para token e chamar a funçao de procurar
+            System.out.println("- formataExpressao aux[i] = " + aux[i]);
+            if (!procurarFuncao(aux[i])) { // Passar string para token e chamar a funçao de procurar
                 auxposicao = procurarPosicao(aux[i]);
                 if (auxposicao != -1) {
                     novoexp = novoexp.concat("p" + auxposicao + " ");
@@ -227,6 +237,7 @@ public class Semantico {
                     novoexp = novoexp.concat(aux[i] + " ");
                 }
             } else {
+                System.out.println("- formataExpressao else aux[i] = " + aux[i]);
                 int rotres = procurarRotulo(aux[i]);
                 novoexp = novoexp.concat("funcao" + rotres + " ");
             }
@@ -235,16 +246,12 @@ public class Semantico {
     }
 
     private int procurarPosicao(String nomeVariavel) throws SemanticoException {
-        int resultado = tabelaSimbolos.procurarPosicaoVariavel(nomeVariavel);
-
-        if (resultado == -1) {
-            throw new SemanticoException(
-                    "Não foi encontrado a variavel com esse nome: '" + nomeVariavel + "' Linha: " + linha);
-        }
-        return resultado;
+        System.out.println("procurarPosicao nomeVariavel = " + nomeVariavel);
+        return tabelaSimbolos.procurarPosicaoVariavel(nomeVariavel);
     }
 
     public boolean procuraFuncaoProcedimento(String nomeFuncao) throws SemanticoException {
+        System.out.println("procuraFuncaoProcedimento nomeFuncao = " + nomeFuncao);
         boolean resultado = tabelaSimbolos
                 .procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
         if (!resultado) {
@@ -255,6 +262,7 @@ public class Semantico {
     }
 
     public int procurarRotulo(String nomeFuncaoOuProcedimento) throws SemanticoException {
+        System.out.println("procurarRotulo nomeFuncaoOuProcedimento = " + nomeFuncaoOuProcedimento);
         int resultado = tabelaSimbolos.procurarRotulo(nomeFuncaoOuProcedimento);
 
         if (resultado == -1) {
@@ -266,6 +274,7 @@ public class Semantico {
 
     // verifica se é algum tipo de operador
     private boolean ehOperador(String simbolo) {
+        System.out.println("ehOperador simbolo = " + simbolo);
         if (Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo)
                 || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)
                 || Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo)
@@ -279,6 +288,7 @@ public class Semantico {
 
     // verifica se é operador unário e operador not
     private boolean ehOperadorUnario(String simbolo) {
+        System.out.println("ehOperadorUnario simbolo = " + simbolo);
         if (Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)
                 || Constantes.NAO_LEXEMA.equals(simbolo)) {
             return true;
@@ -289,6 +299,7 @@ public class Semantico {
     // retorna qual o formato a operação deve ter de acordo com os operadores e o
     // operador
     private String retornaTipoOperacao(String tipo1, String tipo2, String operador) throws SemanticoException {
+        System.out.println("retornaTipoOperacao");
         // 0=inteiro, 1=booleano
         if (ehOperador(operador)) {
             if (ehOperadorMatematico(operador)) {
@@ -330,6 +341,7 @@ public class Semantico {
 
     // verifica se é operador unário
     private boolean ehOperadorUnarioMat(String simbolo) {
+        System.out.println("ehOperadorUnarioMat");
         if (Constantes.MAIS_UNARIO.equals(simbolo) || Constantes.MENOS_UNARIO.equals(simbolo)) {
             return true;
         }
@@ -338,6 +350,7 @@ public class Semantico {
 
     // verifica se a variavel ou funcao existe
     public boolean procuraVariavelFuncao(Token token) throws SemanticoException {
+        System.out.println("procuraVariavelFuncao token.getLexema = " + token.getLexema());
         if (!(tabelaSimbolos.procuraVariavelIgual(token) || !(tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)))) {
             throw new SemanticoException(
                     "Erro linha: " + token.getLinha() + "\nA variável '" + token.getLexema() + "' não foi definida");
@@ -346,8 +359,14 @@ public class Semantico {
         }
     }
 
+    public boolean procurarFuncao(String funcao) throws SemanticoException {
+        System.out.println("procuraVariavelFuncao token.getLexema = " + funcao);
+            return tabelaSimbolos.procuraFuncao(funcao);
+    }
+
     // verifica quem chamou a função ou variavel
     public void quemChamo(String tipo, String chamou) throws SemanticoException {
+        System.out.println("quemChamo tipo = " + tipo + " chamou = " + chamou);
         if ("se".equals(chamou) || "enquanto".equals(chamou)) {
             if (!("booleano".equals(tipo))) {
                 throw new SemanticoException("Erro.\nA condição no '" + chamou + "não é booleana");
@@ -365,6 +384,7 @@ public class Semantico {
 
     // verifica se é operador aritmetico
     private boolean ehOperadorMatematico(String simbolo) {
+        System.out.println("quemChamo ehOperadorMatematico");
         if (Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo)
                 || Constantes.MAIS_LEXEMA.equals(simbolo) || Constantes.MENOS_LEXEMA.equals(simbolo)) {
             return true;
@@ -374,12 +394,14 @@ public class Semantico {
 
     // verifica se a função é valida
     public boolean ehFuncaoValida(int indice) {
+        System.out.println("ehFuncaoValida indice = " + indice);
         return tabelaSimbolos.ehFuncaoValida(indice);
 
     }
 
     // verifica se é operador relacional
     private boolean ehOperadorRelacional(String simbolo) {
+        System.out.println("ehFuncaoValida ehOperadorRelacional");
         if (Constantes.MAIOR_LEXEMA.equals(simbolo) || Constantes.MENOR_LEXEMA.equals(simbolo)
                 || Constantes.MAIOR_IGUAL_LEXEMA.equals(simbolo) || Constantes.MENOR_IGUAL_LEXEMA.equals(simbolo)
                 || Constantes.IGUAL_LEXEMA.equals(simbolo) || Constantes.DIFERENTE_LEXEMA.equals(simbolo)) {
@@ -403,6 +425,7 @@ public class Semantico {
     }
 
     public void verificarListaFuncao(String label) {
+        System.out.println("verificarListaFuncao label = " + label);
         Token auxToken = null;
 
         boolean conditionalThenReturn = false;
@@ -448,7 +471,10 @@ public class Semantico {
     }
 
     public boolean verificarSeFuncaoTemRetorno(String nameOfFunction) throws SemanticoException {
+        System.out.println("verificarSeFuncaoTemRetorno nameOfFunction = " + nameOfFunction);
         int aux = 0;
+        
+        exibirListaTokenFuncao();
 
         for (int i = 0; i < listaTokenFuncao.size(); i++) {
             if (nameOfFunction.equals(listaTokenFuncao.get(i).getLexema())) {
@@ -467,12 +493,21 @@ public class Semantico {
     }
 
     private void removeIf(int start, int end, boolean functionReturn, Token tokenFunction) {
+        System.out.println("removeIf start = " + start + " / end = " + end + " / functionReturn = " + functionReturn + " / tokenFunction = " + tokenFunction);
         for (int i = start; i >= end; i--) {
             listaTokenFuncao.remove(i);
         }
 
         if (functionReturn && tokenFunction != null) {
             listaTokenFuncao.add(tokenFunction);
+        }
+    }
+
+    void exibirListaTokenFuncao(){
+        System.out.println("\nexibirListaTokenFuncao listaTokenFuncao.size = " + listaTokenFuncao.size());
+
+        for (int i = 0; i < listaTokenFuncao.size(); i++) {
+            System.out.println("- listaTokenFuncao.getLexema = " + listaTokenFuncao.get(i).getLexema());
         }
     }
 
