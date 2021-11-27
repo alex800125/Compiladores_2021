@@ -56,15 +56,6 @@ public class Semantico {
         }
     }
 
-    // função que verifica se uma funçao ou procedimento já foi declarado
-    public void procuraFuncaoProcedimentoIgual(Token token) throws SemanticoException {
-        if (tabelaSimbolos.procuraFuncaoProcedimentoIgual(token)) {
-            throw new SemanticoException("Procedimento/Função já existente.");
-        } else if (tabelaSimbolos.procuraNomePrograma(token)) {
-            throw new SemanticoException("Procedimento/Função com mesmo nome do programa.");
-        }
-    }
-
     public void procuraProcedimentoMesmoNome(Token token) throws SemanticoException{
         if(tabelaSimbolos.procuraProcedimento(token.getLexema())){
             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nJá existe um procedimento com o mesmo nome");
@@ -75,6 +66,55 @@ public class Semantico {
         if(tabelaSimbolos.procuraFuncao(token.getLexema())){
             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nJá existe função com o mesmo nome");
         }
+    }
+
+    public void procurarFuncao(Token token) throws SemanticoException {
+        if(!(tabelaSimbolos.procuraFuncao(token.getLexema()))){
+            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
+        }
+    }
+
+    public void procurarProcedimento(Token token) throws SemanticoException {
+        if(!(tabelaSimbolos.procuraProcedimento(token.getLexema()))){
+            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nProcedimento" + token.getLexema() + "não declarado");
+        }
+    }
+
+       // procura posição da variavel
+       public String posicaoVariavel(String var) {
+        int pos = tabelaSimbolos.procurarPosicaoVariavel(var);
+        return Integer.toString(pos);
+    }
+
+    public int procuraRotuloProcedimento(Token token) throws SemanticoException{
+        int rotres = tabelaSimbolos.procurarRotuloProcedimento(token.getLexema());
+        
+        if(rotres == -1){
+            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nProcedimento " + token.getLexema() + "não declarado");
+        }
+        else{
+            return rotres;
+        }     
+    }
+
+    public int procurarRotuloFuncao(Token token) throws SemanticoException{
+        int rotres = tabelaSimbolos.procurarRotuloFuncao(token.getLexema());
+        if(rotres == -1){
+            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
+        }
+        else{
+            return rotres;
+        }
+    }
+
+    // procura por simbolo especifico e retorna seu indice.
+    public int procurarLexema(Token token) throws SemanticoException {
+        int resultado = tabelaSimbolos.procurarLexema(token.getLexema());
+        if (resultado >=0) {
+            return resultado;
+        }
+        throw new SemanticoException(
+            "Não foi encontrado um simbolo com esse nome: '" + token.getLexema() + "' Linha: " + linha);
     }
 
     // essa função passa a expressão recebida para o formato pós-fixa
@@ -177,22 +217,6 @@ public class Semantico {
         }
     }
 
-    // procura posição da variavel
-    public String posicaoVariavel(String var) {
-        int pos = tabelaSimbolos.procurarPosicaoVariavel(var);
-        return Integer.toString(pos);
-    }
-
-    // procura por simbolo especifico e retorna seu indice.
-    public int procurarLexema(Token token) throws SemanticoException {
-        int resultado = tabelaSimbolos.procurarLexema(token.getLexema());
-        if (resultado >=0) {
-            return resultado;
-        }
-        throw new SemanticoException(
-            "Não foi encontrado um simbolo com esse nome: '" + token.getLexema() + "' Linha: " + linha);
-    }
-
     // verifica se as expressoes são válidas e retorna o tipo de expressão final
     private String separaPosFixaExp(String exp) throws SemanticoException {
         String[] aux = exp.split(" ");
@@ -253,48 +277,6 @@ public class Semantico {
             }
         }
         return novoexp;
-    }
-
-
-    public boolean procuraFuncaoProcedimento(String nomeFuncao) throws SemanticoException {
-        boolean resultado = tabelaSimbolos
-                .procuraFuncaoProcedimentoIgual(new Token(Constantes.FUNCAO_LEXEMA, nomeFuncao, linha));
-        if (!resultado) {
-            throw new SemanticoException(
-                    "Não foi encontrado uma função com esse nome: '" + nomeFuncao + "' Linha: " + linha);
-        }
-        return resultado;
-    }
-
-    public int procurarRotulo(String nomeFuncaoOuProcedimento) throws SemanticoException {
-        int resultado = tabelaSimbolos.procurarRotulo(nomeFuncaoOuProcedimento);
-
-        if (resultado == -1) {
-            throw new SemanticoException("Não foi encontrado uma função ou procedimento com esse nome: "
-                    + nomeFuncaoOuProcedimento + " Linha: " + linha);
-        }
-        return resultado;
-    }
-
-    public int procuraRotuloProcedimento(Token token) throws SemanticoException{
-        int rotres = tabelaSimbolos.procurarRotuloProcedimento(token.getLexema());
-        
-        if(rotres == -1){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nProcedimento " + token.getLexema() + "não declarado");
-        }
-        else{
-            return rotres;
-        }     
-    }
-
-    public int procurarRotuloFuncao(Token token) throws SemanticoException{
-        int rotres = tabelaSimbolos.procurarRotuloFuncao(token.getLexema());
-        if(rotres == -1){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
-        }
-        else{
-            return rotres;
-        }
     }
 
     // verifica se é algum tipo de operador
@@ -369,35 +351,6 @@ public class Semantico {
         return false;
     }
 
-    public void procurarFuncao(Token token) throws SemanticoException {
-        if(!(tabelaSimbolos.procuraFuncao(token.getLexema()))){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
-        }
-    }
-
-    public void procurarProcedimento(Token token) throws SemanticoException {
-        if(!(tabelaSimbolos.procuraProcedimento(token.getLexema()))){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nProcedimento" + token.getLexema() + "não declarado");
-        }
-    }
-
-    // verifica quem chamou a função ou variavel
-    public void quemChamo(String tipo, String chamou) throws SemanticoException {
-        if (Constantes.SE_LEXEMA.equals(chamou) || Constantes.ENQUANTO_LEXEMA.equals(chamou)) {
-            if (!(Constantes.BOOLEANO_LEXEMA.equals(tipo))) {
-                throw new SemanticoException("Erro.\nA condição no '" + chamou + "não é booleana");
-            }
-        } else {
-            String tipochamou = tabelaSimbolos.procurarTipoVariavelFuncao(chamou);
-
-            if (!(tipo.equals(tipochamou))) {
-                throw new SemanticoException(
-                        "A expressão do tipo '" + tipo + "' é incompatível com a variável/função do tipo '" + tipochamou
-                                + "', por isso não é possível fazer a atribuição");
-            }
-        }
-    }
-
     // verifica se é operador aritmetico
     private boolean ehOperadorMatematico(String simbolo) {
         if (Constantes.MULT_LEXEMA.equals(simbolo) || Constantes.DIV_LEXEMA.equals(simbolo)
@@ -441,6 +394,22 @@ public class Semantico {
         listaTokenFuncao.clear();
     }
 
+    // verifica quem chamou a função ou variavel
+    public void quemChamo(String tipo, String chamou) throws SemanticoException {
+        if (Constantes.SE_LEXEMA.equals(chamou) || Constantes.ENQUANTO_LEXEMA.equals(chamou)) {
+            if (!(Constantes.BOOLEANO_LEXEMA.equals(tipo))) {
+                throw new SemanticoException("Erro.\nA condição no '" + chamou + "não é booleana");
+            }
+        } else {
+            String tipochamou = tabelaSimbolos.procurarTipoVariavelFuncao(chamou);
+
+            if (!(tipo.equals(tipochamou))) {
+                throw new SemanticoException(
+                        "A expressão do tipo '" + tipo + "' é incompatível com a variável/função do tipo '" + tipochamou
+                                + "', por isso não é possível fazer a atribuição");
+            }
+        }
+    }
 
     public void verificarListaFuncao(String label) {
         Token auxToken = null;

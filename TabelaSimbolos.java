@@ -101,20 +101,6 @@ public class TabelaSimbolos {
         return nomePrograma(lexema);
     }
 
-    // Função/procedimento com mesmo nome
-    public boolean procuraFuncaoProcedimentoIgual(Token token) {
-        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            // só executo se não for uma variavel, caso seja eu apenas pulo ela.
-            if (!pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)
-                    && !pilhaSimbolos.get(i).getTipo().equals(Constantes.PROGRAMA_LEXEMA)) {
-                if (pilhaSimbolos.get(i).getLexema().equals(token.getLexema())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     // Retorna o tipo de uma variavel ou função (só é elegivel para esses dois
     // metodos)
     public String procurarTipoVariavelFuncao(String lexema) {
@@ -151,16 +137,6 @@ public class TabelaSimbolos {
                 if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return i;
                 }
-            }
-        }
-        return -1;
-    }
-
-    // Recebe o nome da função ou do procedimento e procura o seu rotulo
-    public int procurarRotulo(String funcaoOuProcedimento) {
-        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if (pilhaSimbolos.get(i).getLexema().equals(funcaoOuProcedimento)) {
-                return pilhaSimbolos.get(i).getRotulo();
             }
         }
         return -1;
