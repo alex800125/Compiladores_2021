@@ -107,7 +107,6 @@ public class Interface extends JFrame {
             if (event.getSource() == tokens) {
                 Sintatico sintatico = new Sintatico(areaCodigo.getText());
                 console.setText(sintatico.getMessage());
-                sintatico.PegaVetor();
             }
         }
     }

@@ -1,4 +1,4 @@
-import java.util.Vector;
+
 import java.util.ArrayList;
 import java.util.List;
 import Exception.LexicoException;
@@ -7,21 +7,21 @@ import Exception.SintaticoException;
 
 public class Sintatico {
 
-    private Vector<Token> Tokens = new Vector<Token>();
-    private String message = "";
+    private List<Token> expressao = new ArrayList<Token>();
+    private List<Boolean> flagproc = new ArrayList<Boolean>();
+    private List<Boolean> flagfunc = new ArrayList<Boolean>();
+    private List<Integer> varalloc = new ArrayList<Integer>();
+    private List<String> nomefunc = new ArrayList<String>();
+    Token token = new Token("", "", 0);
     private Lexico lexico;
     private Semantico semantico;
     private GeradordeCodigo geracod;
-    private int posicao = 0;
+    private String message = "";
     private int rotulo = 0;
     private int auxrotulo = 0;
+    private int posicao = 0;
     private int contvariavel = 0;
-    Token token = new Token("", "", 0);
-    private List<Token> expressao = new ArrayList<Token>();
-    private List<String> nomefunc = new ArrayList<String>();
-    private List<Integer> varalloc = new ArrayList<Integer>();
-    private List<Boolean> flagproc = new ArrayList<Boolean>();
-    private List<Boolean> flagfunc = new ArrayList<Boolean>();
+    
 
     public Sintatico(String codigo) {
         flagproc.add(false);
@@ -158,6 +158,16 @@ public class Sintatico {
         analisaTipo();
     }
 
+    private void analisaTipo() throws SintaticoException, LexicoException, SemanticoException {
+        if (!(token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO))
+                && !(token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO))) {
+            throw new SintaticoException("Inteiro ou Booleano", token.getLexema(), token.getLinha());
+        } else {
+            semantico.inserirTipoVariavel(token.getLexema());
+        }
+        getToken();
+    }
+
     private void analisaSubrotinas() throws SintaticoException, LexicoException, SemanticoException {
         int auxrot = 0, flag = 0;
 
@@ -227,8 +237,6 @@ public class Sintatico {
         Token auxtok = token;
         getToken();
         if (token.getSimbolo().equals(Constantes.ATRIBUICAO_SIMBOLO)) {
-            System.out.println("analisaAtribChprocedimento semantico.procuraVariavelFuncao auxtok.getLexema() = "
-                    + auxtok.getLexema());
             semantico.procuraVariavelFuncao(auxtok);
             analisaAtribuicao(auxtok);
         } else {
@@ -248,19 +256,6 @@ public class Sintatico {
         semantico.quemChamo(tipo, auxtok.getLexema());
         expressao.clear();
 
-        /*
-         * System.out.println("--- analisaAtribuicao token = " + token.getLexema());
-         * System.out.
-         * println("--- analisaAtribuicao flagfunc.get(flagfunc.size() - 1) = " +
-         * flagfunc.get(flagfunc.size() - 1)); System.out.
-         * println("--- analisaAtribuicao nomefunc.get(nomefunc.size() - 1) = " +
-         * nomefunc.get(nomefunc.size() - 1));
-         * System.out.println("--- analisaAtribuicao auxtok.getLexema() = " +
-         * auxtok.getLexema());
-         */
-
-        // printandoStack();
-
         if (flagfunc.get(flagfunc.size() - 1) && (nomefunc.get(nomefunc.size() - 1)).equals(auxtok.getLexema())) {
             semantico.insereTokenFuncaoLista(auxtok);
         }
@@ -272,25 +267,6 @@ public class Sintatico {
         } else {
             geracod.criaCodigo("STR", semantico.posicaoVariavel(auxtok.getLexema()), "");
         }
-    }
-
-    private void printandoStack() {
-        System.out.println("------------------------------- ");
-        System.out.println("--- printandoStack flagfunc --- " + flagfunc.size());
-        for (int i = 0; i < flagfunc.size() - 1; i++) {
-            System.out.println("--- flagfunc pos(" + i + ") = " + flagfunc.get(i));
-        }
-
-        System.out.println("--- printandoStack flagproc --- " + flagproc.size());
-        for (int i = 0; i < flagproc.size() - 1; i++) {
-            System.out.println("--- flagproc pos(" + i + ") = " + flagproc.get(i));
-        }
-
-        System.out.println("--- printandoStack nomefunc --- " + nomefunc.size());
-        for (int i = 0; i < nomefunc.size() - 1; i++) {
-            System.out.println("--- nomefunc pos(" + i + ") = " + nomefunc.get(i));
-        }
-        System.out.println("------------------------------- ");
     }
 
     private void analisaExpressao() throws SintaticoException, LexicoException, SemanticoException {
@@ -334,7 +310,7 @@ public class Sintatico {
 
     private void analisaFator() throws SintaticoException, LexicoException, SemanticoException {
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-            int indice = semantico.procurarLexema(token.getLexema());
+            int indice = semantico.procurarLexema(token);
             if (semantico.ehFuncaoValida(indice)) {
                 expressao.add(token);
                 chamadaFuncao(indice);
@@ -364,21 +340,20 @@ public class Sintatico {
             expressao.add(token);
             getToken();
         } else {
-            throw new SintaticoException("Identificador, Número ou Expressão para comparar", token.getLexema(),
+            throw new SintaticoException("Expressão incompleta", token.getLexema(),
                     token.getLinha());
         }
     }
 
     private void chamadaFuncao(int indice) throws SintaticoException, LexicoException, SemanticoException {
         String simbololexico = semantico.getLexemaSimbolo(indice);
-        semantico.procuraFuncaoProcedimento(simbololexico);
+        semantico.procurarFuncao(new Token("", simbololexico, token.getLinha()));
         getToken();
     }
 
     private void chamadaProcedimento(Token auxtoken) throws SintaticoException, LexicoException, SemanticoException {
-        System.out.println("chamadaProcedimento auxtoken.getLexema() = " + auxtoken.getLexema());
-        semantico.procuraFuncaoProcedimento(auxtoken.getLexema());
-        int rotres = semantico.procurarRotulo(auxtoken.getLexema());
+        semantico.procurarProcedimento(auxtoken);
+        int rotres = semantico.procuraRotuloProcedimento(auxtoken);
         geracod.criaCodigo("CALL", "L" + rotres, "");
     }
 
@@ -388,14 +363,13 @@ public class Sintatico {
         if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-                semantico.procuraVariavelFuncao(token);
+                semantico.procuraVariavel(token);
                 geracod.criaCodigo("STR", semantico.posicaoVariavel(token.getLexema()), "");
                 getToken();
                 if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
                     getToken();
                 } else {
-                    throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(),
-                            token.getLinha());
+                    throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
                 }
             } else {
                 throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
@@ -410,12 +384,9 @@ public class Sintatico {
         if (token.getSimbolo().equals(Constantes.ABRE_PARENTESES_SIMBOLO)) {
             getToken();
             if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-                System.out.println("analisaEscreva token.getLexema() = " + token.getLexema());
-                boolean ehfuncao = semantico.procurarFuncao(token.getLexema());
-                System.out.println("analisaEscreva ehfuncao = " + ehfuncao);
+                boolean ehfuncao = semantico.procuraVariavelFuncao(token);
                 if (ehfuncao) {
-                    int rotuloresult = semantico.procurarRotulo(token.getLexema());
-                    System.out.println("analisaEscreva rotuloresult = " + rotuloresult);
+                    int rotuloresult = semantico.procurarRotuloFuncao(token);
                     geracod.criaCodigo("CALL", "L" + rotuloresult, "");
                 } else {
                     String posicaovar = semantico.posicaoVariavel(token.getLexema());
@@ -450,7 +421,7 @@ public class Sintatico {
         String novoexp = semantico.formataExpressao(auxexpressao);
         geracod.criaCodigo(novoexp);
         String tipoexpressao = semantico.retornaTipoExpressao(auxexpressao);
-        semantico.quemChamo(tipoexpressao, "enquanto");
+        semantico.quemChamo(tipoexpressao, Constantes.ENQUANTO_LEXEMA);
         expressao.clear();
 
         if (token.getSimbolo().equals(Constantes.FACA_SIMBOLO)) {
@@ -482,7 +453,7 @@ public class Sintatico {
         String novoexp = semantico.formataExpressao(auxexpressao);
         geracod.criaCodigo(novoexp);
         String tipoexpressao = semantico.retornaTipoExpressao(auxexpressao);
-        semantico.quemChamo(tipoexpressao, "se");
+        semantico.quemChamo(tipoexpressao, Constantes.SE_LEXEMA);
         expressao.clear();
 
         if (token.getSimbolo().equals(Constantes.ENTAO_SIMBOLO)) {
@@ -531,7 +502,7 @@ public class Sintatico {
         flagproc.add(true);
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-            semantico.procuraFuncaoProcedimentoIgual(token);
+            semantico.procuraProcedimentoMesmoNome(token);
             semantico.insereTabela(token.getLexema(), Constantes.PROCEDIMENTO_LEXEMA, rotulo, -1);
             geracod.criaCodigo("L" + rotulo, "NULL", "");
             rotulo++;
@@ -563,7 +534,7 @@ public class Sintatico {
         flagfunc.add(true);
         getToken();
         if (token.getSimbolo().equals(Constantes.IDENTIFICADOR_SIMBOLO)) {
-            semantico.procuraFuncaoProcedimentoIgual(token);
+            semantico.procuraFuncaoMesmoNome(token);
             semantico.insereTabela(token.getLexema(), Constantes.FUNCAO_LEXEMA, rotulo, -1);
             geracod.criaCodigo("L" + rotulo, "NULL", "");
             rotulo++;
@@ -595,7 +566,7 @@ public class Sintatico {
 
         semantico.limpaNivelTabela();
         flagfunc.remove(flagfunc.size() - 1);
-        // semantico.verificarSeFuncaoTemRetorno(nomefunc.get(nomefunc.size() - 1));
+        semantico.verificarSeFuncaoTemRetorno(nomefunc.get(nomefunc.size() - 1));
         nomefunc.remove(nomefunc.size() - 1);
         geracod.criaCodigo("STR", "0", "");
         if (varalloc.get(varalloc.size() - 1) > 0) {
@@ -605,39 +576,14 @@ public class Sintatico {
         }
         geracod.criaCodigo("RETURN", "", "");
 
-        semantico.limpaNivelTabela();
+        semantico.limpaListaFuncao();
     }
-
-    private void analisaTipo() throws SintaticoException, LexicoException, SemanticoException {
-        if (!(token.getSimbolo().equals(Constantes.INTEIRO_SIMBOLO))
-                && !(token.getSimbolo().equals(Constantes.BOOLEANO_SIMBOLO))) {
-            throw new SintaticoException("Inteiro ou Booleano", token.getLexema(), token.getLinha());
-        } else {
-            semantico.inserirTipoVariavel(token.getLexema());
-        }
-        getToken();
-    }
-
-    // TODO Inserir as demais classes do sintatico
 
     // Pega o proximo token a ser usado
     private void getToken() {
         token = lexico.getToken();
-        // System.out.println(
-        // "lexema = " + token.getLexema() + " simbolo = " + token.getSimbolo() + "
-        // linha = " + token.getLinha());
     }
 
-    // função que percorre toda o codigo e joga os tokens numa lista
-    private void gerarListaToken() {
-        while (token.getLinha() != -1) {
-            getToken();
-
-            if (token.getLinha() != -1) {
-                Tokens.add(token);
-            }
-        }
-    }
 
     public final String getMessage() {
         return this.message;
@@ -647,7 +593,4 @@ public class Sintatico {
         this.message = message;
     }
 
-    public Vector<Token> PegaVetor() {
-        return Tokens;
-    }
 }
