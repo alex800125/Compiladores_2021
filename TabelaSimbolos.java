@@ -3,7 +3,7 @@ import java.util.List;
 
 public class TabelaSimbolos {
     private List<Simbolos> pilhaSimbolos;
-    
+
     // Construtor da classe, inicia a pilha
     public TabelaSimbolos() {
         pilhaSimbolos = new ArrayList<Simbolos>();
@@ -16,10 +16,10 @@ public class TabelaSimbolos {
 
     // Atribui a uma função o tipo definido na declaração.
     public void inserirTipoFuncao(String tipo) {
-        Simbolos simbol = pilhaSimbolos.get(pilhaSimbolos.size()-1);
+        Simbolos simbol = pilhaSimbolos.get(pilhaSimbolos.size() - 1);
 
-        if(simbol.getTipo().equals(Constantes.FUNCAO_LEXEMA) && simbol.getBooleanoOuInteiro()==null){
-            pilhaSimbolos.get(pilhaSimbolos.size()-1).setBooleanoOuInteiro(tipo);
+        if (simbol.getTipo().equals(Constantes.FUNCAO_LEXEMA) && simbol.getBooleanoOuInteiro() == null) {
+            pilhaSimbolos.get(pilhaSimbolos.size() - 1).setBooleanoOuInteiro(tipo);
         }
     }
 
@@ -41,28 +41,28 @@ public class TabelaSimbolos {
         int i;
         for (i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
             if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)) {
-                if(token.getLexema().equals(pilhaSimbolos.get(i).getLexema())){
+                if (token.getLexema().equals(pilhaSimbolos.get(i).getLexema())) {
                     return true;
                 }
-            }
-            else{
+            } else {
                 break;
             }
         }
 
-        for(int j=i;j>=0;j--){
-            if((pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) || (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA))){
-                if(token.getLexema().equals(pilhaSimbolos.get(i).getLexema())){
+        for (int j = i; j >= 0; j--) {
+            if ((pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA))
+                    || (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA))) {
+                if (token.getLexema().equals(pilhaSimbolos.get(i).getLexema())) {
                     return true;
                 }
             }
         }
-        
+
         return nomePrograma(token.getLexema());
     }
 
     private boolean nomePrograma(String lexema) {
-        if(lexema.equals(pilhaSimbolos.get(0).getLexema())){
+        if (lexema.equals(pilhaSimbolos.get(0).getLexema())) {
             return true;
         }
         return false;
@@ -70,7 +70,7 @@ public class TabelaSimbolos {
 
     public boolean procuraVariavel(String lexema) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)){
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return true;
                 }
@@ -81,7 +81,7 @@ public class TabelaSimbolos {
 
     public boolean procuraFuncao(String lexema) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)){
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return true;
                 }
@@ -92,7 +92,7 @@ public class TabelaSimbolos {
 
     public boolean procuraProcedimento(String lexema) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)){
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return true;
                 }
@@ -121,7 +121,7 @@ public class TabelaSimbolos {
 
     public int procurarPosicaoVariavel(String variavel) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)){
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(variavel)) {
                     return pilhaSimbolos.get(i).getPosicao();
                 }
@@ -133,7 +133,8 @@ public class TabelaSimbolos {
     // procura por um simbolo especifico e retorna sua posição na pilha
     public int procurarLexema(String lexema) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA) || pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)){
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.VAR_LEXEMA)
+                    || pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return i;
                 }
@@ -145,7 +146,7 @@ public class TabelaSimbolos {
     // Recebe o nome da função ou do procedimento e procura o seu rotulo
     public int procurarRotuloFuncao(String lexema) {
         for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)){
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)) {
                 if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return pilhaSimbolos.get(i).getRotulo();
                 }
@@ -155,9 +156,9 @@ public class TabelaSimbolos {
     }
 
     public int procurarRotuloProcedimento(String lexema) {
-        for(int i = (pilhaSimbolos.size()-1);i>=0;i--){
-            if(pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)){
-                if(pilhaSimbolos.get(i).getLexema().equals(lexema)){
+        for (int i = (pilhaSimbolos.size() - 1); i >= 0; i--) {
+            if (pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) {
+                if (pilhaSimbolos.get(i).getLexema().equals(lexema)) {
                     return pilhaSimbolos.get(i).getRotulo();
                 }
             }
@@ -181,11 +182,10 @@ public class TabelaSimbolos {
         for (int i = (pilhaSimbolos.size() - 1); i > 0; i--) {
             if (pilhaSimbolos.get(i).getTipo().equals(Constantes.FUNCAO_LEXEMA)
                     || pilhaSimbolos.get(i).getTipo().equals(Constantes.PROCEDIMENTO_LEXEMA)) {
-                if(pilhaSimbolos.get(i).naoestafechado()){
+                if (pilhaSimbolos.get(i).naoestafechado()) {
                     pilhaSimbolos.get(i).setaFechado(true);
                     break;
-                }
-                else{
+                } else {
                     pilhaSimbolos.remove(i);
                 }
             } else {

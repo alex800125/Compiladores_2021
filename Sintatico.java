@@ -21,7 +21,6 @@ public class Sintatico {
     private int auxrotulo = 0;
     private int posicao = 0;
     private int contvariavel = 0;
-    
 
     public Sintatico(String codigo) {
         flagproc.add(false);
@@ -369,7 +368,8 @@ public class Sintatico {
                 if (token.getSimbolo().equals(Constantes.FECHA_PARENTESES_SIMBOLO)) {
                     getToken();
                 } else {
-                    throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(), token.getLinha());
+                    throw new SintaticoException(Constantes.FECHA_PARENTESES_LEXEMA, token.getLexema(),
+                            token.getLinha());
                 }
             } else {
                 throw new SintaticoException(Constantes.IDENTIFICADOR_LEXEMA, token.getLexema(), token.getLinha());
@@ -583,7 +583,6 @@ public class Sintatico {
     private void getToken() {
         token = lexico.getToken();
     }
-
 
     public final String getMessage() {
         return this.message;

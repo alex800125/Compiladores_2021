@@ -33,9 +33,10 @@ public class Semantico {
         tabelaSimbolos.inserirTipoVariavel(tipo);
     }
 
-    public void procuraVariavel(Token token) throws SemanticoException{
-        if(!(tabelaSimbolos.procuraVariavel(token.getLexema()))){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nA variável" + token.getLexema() + "não foi definida");
+    public void procuraVariavel(Token token) throws SemanticoException {
+        if (!(tabelaSimbolos.procuraVariavel(token.getLexema()))) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nA variável" + token.getLexema() + "não foi definida");
         }
     }
 
@@ -56,53 +57,56 @@ public class Semantico {
         }
     }
 
-    public void procuraProcedimentoMesmoNome(Token token) throws SemanticoException{
-        if(tabelaSimbolos.procuraProcedimento(token.getLexema())){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nJá existe um procedimento com o mesmo nome");
+    public void procuraProcedimentoMesmoNome(Token token) throws SemanticoException {
+        if (tabelaSimbolos.procuraProcedimento(token.getLexema())) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nJá existe um procedimento com o mesmo nome");
         }
     }
 
-    public void procuraFuncaoMesmoNome(Token token) throws SemanticoException{
-        if(tabelaSimbolos.procuraFuncao(token.getLexema())){
+    public void procuraFuncaoMesmoNome(Token token) throws SemanticoException {
+        if (tabelaSimbolos.procuraFuncao(token.getLexema())) {
             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nJá existe função com o mesmo nome");
         }
     }
 
     public void procurarFuncao(Token token) throws SemanticoException {
-        if(!(tabelaSimbolos.procuraFuncao(token.getLexema()))){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
+        if (!(tabelaSimbolos.procuraFuncao(token.getLexema()))) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
         }
     }
 
     public void procurarProcedimento(Token token) throws SemanticoException {
-        if(!(tabelaSimbolos.procuraProcedimento(token.getLexema()))){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nProcedimento" + token.getLexema() + "não declarado");
+        if (!(tabelaSimbolos.procuraProcedimento(token.getLexema()))) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nProcedimento" + token.getLexema() + "não declarado");
         }
     }
 
-       // procura posição da variavel
-       public String posicaoVariavel(String var) {
+    // procura posição da variavel
+    public String posicaoVariavel(String var) {
         int pos = tabelaSimbolos.procurarPosicaoVariavel(var);
         return Integer.toString(pos);
     }
 
-    public int procuraRotuloProcedimento(Token token) throws SemanticoException{
+    public int procuraRotuloProcedimento(Token token) throws SemanticoException {
         int rotres = tabelaSimbolos.procurarRotuloProcedimento(token.getLexema());
-        
-        if(rotres == -1){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nProcedimento " + token.getLexema() + "não declarado");
-        }
-        else{
+
+        if (rotres == -1) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nProcedimento " + token.getLexema() + "não declarado");
+        } else {
             return rotres;
-        }     
+        }
     }
 
-    public int procurarRotuloFuncao(Token token) throws SemanticoException{
+    public int procurarRotuloFuncao(Token token) throws SemanticoException {
         int rotres = tabelaSimbolos.procurarRotuloFuncao(token.getLexema());
-        if(rotres == -1){
-            throw new SemanticoException("Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
-        }
-        else{
+        if (rotres == -1) {
+            throw new SemanticoException(
+                    "Erro linha: " + token.getLinha() + "\nFunçao" + token.getLexema() + "não declarada");
+        } else {
             return rotres;
         }
     }
@@ -110,11 +114,11 @@ public class Semantico {
     // procura por simbolo especifico e retorna seu indice.
     public int procurarLexema(Token token) throws SemanticoException {
         int resultado = tabelaSimbolos.procurarLexema(token.getLexema());
-        if (resultado >=0) {
+        if (resultado >= 0) {
             return resultado;
         }
         throw new SemanticoException(
-            "Não foi encontrado um simbolo com esse nome: '" + token.getLexema() + "' Linha: " + linha);
+                "Não foi encontrado um simbolo com esse nome: '" + token.getLexema() + "' Linha: " + linha);
     }
 
     // essa função passa a expressão recebida para o formato pós-fixa
@@ -177,31 +181,32 @@ public class Semantico {
 
     // retorna a prioridade de cada operador, essa função auxilia na pós-fixa
     private int definePrioridaOperador(String operador) {
-        if (null != operador) switch (operador) {
-            case Constantes.MAIS_UNARIO:
-            case Constantes.MENOS_UNARIO:
-            case Constantes.NAO_LEXEMA:
-                return 5;
-            case Constantes.MULT_LEXEMA:
-            case Constantes.DIV_LEXEMA:
-                return 4;
-            case Constantes.MAIS_LEXEMA:
-            case Constantes.MENOS_LEXEMA:
-                return 3;
-            case Constantes.MAIOR_LEXEMA:
-            case Constantes.MENOR_LEXEMA:
-            case Constantes.MAIOR_IGUAL_LEXEMA:
-            case Constantes.MENOR_IGUAL_LEXEMA:
-            case Constantes.IGUAL_LEXEMA:
-            case Constantes.DIFERENTE_LEXEMA:
-                return 2;
-            case Constantes.E_LEXEMA:
-                return 1;
-            case Constantes.OU_LEXEMA:
-                return 0;
-            default:
-                break;
-        }
+        if (null != operador)
+            switch (operador) {
+                case Constantes.MAIS_UNARIO:
+                case Constantes.MENOS_UNARIO:
+                case Constantes.NAO_LEXEMA:
+                    return 5;
+                case Constantes.MULT_LEXEMA:
+                case Constantes.DIV_LEXEMA:
+                    return 4;
+                case Constantes.MAIS_LEXEMA:
+                case Constantes.MENOS_LEXEMA:
+                    return 3;
+                case Constantes.MAIOR_LEXEMA:
+                case Constantes.MENOR_LEXEMA:
+                case Constantes.MAIOR_IGUAL_LEXEMA:
+                case Constantes.MENOR_IGUAL_LEXEMA:
+                case Constantes.IGUAL_LEXEMA:
+                case Constantes.DIFERENTE_LEXEMA:
+                    return 2;
+                case Constantes.E_LEXEMA:
+                    return 1;
+                case Constantes.OU_LEXEMA:
+                    return 0;
+                default:
+                    break;
+            }
         return -1;
     }
 
@@ -390,7 +395,7 @@ public class Semantico {
         listaTokenFuncao.add(token);
     }
 
-    public void limpaListaFuncao(){
+    public void limpaListaFuncao() {
         listaTokenFuncao.clear();
     }
 
@@ -449,7 +454,8 @@ public class Semantico {
                 }
             }
         }
-        if (elsePosition == (-1)) elsePosition = listaTokenFuncao.size() - 1;
+        if (elsePosition == (-1))
+            elsePosition = listaTokenFuncao.size() - 1;
 
         removeIf(elsePosition, thenPosition, (conditionalThenReturn && conditionalElseReturn), auxToken);
     }
@@ -467,7 +473,8 @@ public class Semantico {
         }
 
         error = true;
-        if (linhaSemRetorno != 0) linha = linhaSemRetorno;
+        if (linhaSemRetorno != 0)
+            linha = linhaSemRetorno;
 
         throw new SemanticoException("Nem todos os caminhos da função possuem retorno." + "\nLinha: " + linha);
     }

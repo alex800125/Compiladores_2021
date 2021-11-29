@@ -1,0 +1,24 @@
+{teste2}
+programa fatorial;
+var x:inteiro;
+
+funcao fat:inteiro;
+var w:inteiro;
+inicio
+ se x = 1
+  entao fat:=1 
+  senao 
+    inicio
+       w := x;
+        x := x - 1;
+        fat:= w * fat;
+     fim;
+fim;
+
+inicio
+ leia(x);
+ escreva(x);
+ x:= fat;
+ escreva(x);
+
+fim. 

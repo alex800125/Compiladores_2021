@@ -1,0 +1,46 @@
+ programa testefinal1;
+
+var x,y, dobro: inteiro;
+
+procedimento d;
+  var x: inteiro;
+
+  procedimento m;
+  var b: inteiro;
+  inicio
+      	b:= x*y;
+
+	escreva(b);
+  fim;
+inicio
+        m;
+        x:= 1;
+	dobro:=x+x
+fim;
+
+funcao f1:inteiro;
+var media, res: inteiro;
+inicio
+	media :=(x+y) div 2;
+	se x>y
+        entao
+   		res:=media
+	senao
+		res:=dobro;	
+ 	f1:=res;
+     	
+fim;
+
+inicio
+leia(x);
+leia(y);
+d;
+escreva(x);
+x:= x+f1+y*x;
+escreva(x)
+fim.
+
+
+
+
+
