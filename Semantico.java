@@ -18,17 +18,26 @@ public class Semantico {
         tabelaSimbolos = new TabelaSimbolos();
     }
 
-    // insere um elemento na pilha de simbolos
+    /**
+     * Função responsável por inserir o simbolo na pilha de simbolos.
+     * Chama uma função na tabela de simbolos.
+     * É chamado em 4 pontos do Sintatico: inicio do programa, declaração de função,
+     * declaração de procedimento e declaração de variavel.
+     */
     public void insereTabela(String lexema, String tipo, int rotulo, int posicao) {
         tabelaSimbolos.inserirPilhaSimbolos(lexema, tipo, rotulo, posicao);
     }
 
-    // insere o tipo da funcao depois de declaradas
+    /**
+     * Atribui a uma função o tipo definido na declaração.
+     */
     public void inserirTipoFuncao(String tipo) {
         tabelaSimbolos.inserirTipoFuncao(tipo);
     }
 
-    // insere o tipo da variavel depois de declaradas
+    /**
+     * Atribui a uma variavel o tipo definido na declaração.
+     */
     public void inserirTipoVariavel(String tipo) {
         tabelaSimbolos.inserirTipoVariavel(tipo);
     }
@@ -40,14 +49,22 @@ public class Semantico {
         }
     }
 
-    // função que verifica se uma variavel já foi declarada
+    /**
+     * verifica se uma variavel já foi declarada.
+     * 
+     * @param token recebe o token e verifica o lexema a ser procurado.
+     * @throws SemanticoException gera uma exceção semantica caso uma variavel igual
+     *                            seja encontrada ou seja o mesmo nome do programa.
+     */
     public void procuraVariavelIgual(Token token) throws SemanticoException {
         if (tabelaSimbolos.procuraVariavelIgual(token)) {
             throw new SemanticoException("Erro linha: " + token.getLinha() + " Variavel já existe.");
         }
     }
 
-    // verifica se a variavel ou funcao existe
+    /**
+     * Procura variavel e função com o mesmo nome.
+     */
     public boolean procuraVariavelFuncao(Token token) throws SemanticoException {
         if (!(tabelaSimbolos.procuraVariavel(token.getLexema()) || tabelaSimbolos.procuraFuncao(token.getLexema()))) {
             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nA variável ou função '"
@@ -57,6 +74,9 @@ public class Semantico {
         }
     }
 
+    /**
+     * Procura procedimento com o mesmo nome.
+     */
     public void procuraProcedimentoMesmoNome(Token token) throws SemanticoException {
         if (tabelaSimbolos.procuraProcedimento(token.getLexema())) {
             throw new SemanticoException(
@@ -64,12 +84,18 @@ public class Semantico {
         }
     }
 
+    /**
+     * Procura função com o mesmo nome.
+     */
     public void procuraFuncaoMesmoNome(Token token) throws SemanticoException {
         if (tabelaSimbolos.procuraFuncao(token.getLexema())) {
             throw new SemanticoException("Erro linha: " + token.getLinha() + "\nJá existe função com o mesmo nome");
         }
     }
 
+    /**
+     * Procura função com o mesmo nome.
+     */
     public void procurarFuncao(Token token) throws SemanticoException {
         if (!(tabelaSimbolos.procuraFuncao(token.getLexema()))) {
             throw new SemanticoException(
@@ -77,6 +103,9 @@ public class Semantico {
         }
     }
 
+    /**
+     * Procura procedimento com o mesmo nome.
+     */
     public void procurarProcedimento(Token token) throws SemanticoException {
         if (!(tabelaSimbolos.procuraProcedimento(token.getLexema()))) {
             throw new SemanticoException(
@@ -381,11 +410,17 @@ public class Semantico {
         return false;
     }
 
+    /**
+     * Retorna o lexema no indice passado.
+     */
     public String getLexemaSimbolo(int indice) {
         return tabelaSimbolos.getSimboloLex(indice);
     }
 
-    // chama a função da tabela de simbolos que limpa o nivel
+    /**
+     * Quando uma função, procedimento ou o programa chega ao fim, é removido as
+     * variaveis alocadas dentro desse trecho de código.
+     */
     public void limpaNivelTabela() {
         tabelaSimbolos.limparNivel();
     }
