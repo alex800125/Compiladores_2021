@@ -97,7 +97,7 @@ public class GeradordeCodigo {
     public void criaArquivo() {
         try {
             // File directory = new File("E:\\", "cod_assembly.txt");
-            File directory = new File("D:\\compiladores", "cod_assembly.txt");
+            File directory = new File("D:\\compiladores", "grupo_6.txt");
             directory.createNewFile();
 
             FileWriter file = new FileWriter(directory);
