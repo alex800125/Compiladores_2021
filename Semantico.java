@@ -558,8 +558,13 @@ public class Semantico {
     }
 
     /**
+     * Durante a execução da função 'analisaSe()' do sintatico, nós vamos inserindo
+     * na lista 'listaTokenFuncao' os itens (SE, ENTAO, SENAO), após chegarmos ao
+     * final, nós chamamos a função 'verificarListaFuncao()' para validarmos se esse
+     * IF esta funcionando corretamente e por fim, retiramos ele da lista.
+     * Se tudo ocorrer certo, nós retiramos a inserções feitas.
      * 
-     * @param label
+     * @param label passamos a label da atual função.
      */
     public void verificarListaFuncao(String label) {
         Token auxToken = null;
@@ -606,6 +611,35 @@ public class Semantico {
         removeIf(posicaoSenao, posicaoEntao, (condicionalRetornoEntao && conditionalRetornoSenao), auxToken);
     }
 
+    /**
+     * Chamamos essa função ao final da 'verificarListaFuncao()' apenas. Aqui nós
+     * retiramos os itens (SE, ENTAO, SENAO) inseridos na lista.
+     * 
+     * @param comeco           começamos pelo senao
+     * @param fim              terminamos no entao
+     * @param funcaoTemRetorno se caso houver um retorno no meio do entao ou senao
+     * @param token            token referente a função atual
+     */
+    private void removeIf(int comeco, int fim, boolean funcaoTemRetorno, Token token) {
+        for (int i = comeco; i >= fim; i--) {
+            listaTokenFuncao.remove(i);
+        }
+
+        if (funcaoTemRetorno && token != null) {
+            listaTokenFuncao.add(token);
+        }
+    }
+
+    /**
+     * Chamada ao fim da execução de uma função, verificamos ao final de tudo se há
+     * apenas retornos para função escrita. Se houver mais itens além do retorno de
+     * função, teremos uma exceção que algum caminho não tem retorno
+     * 
+     * @param nomeFuncao nome da atual função
+     * @return retorna o resultado, 'true' se tudo estiver certo
+     * @throws SemanticoException geramos uma exceção caso não tivermos apenas
+     *                            retornos de funções na lista
+     */
     public boolean verificarSeFuncaoTemRetorno(String nomeFuncao) throws SemanticoException {
         int aux = 0;
 
@@ -623,16 +657,6 @@ public class Semantico {
             linha = linhaSemRetorno;
 
         throw new SemanticoException("Nem todos os caminhos da função possuem retorno." + "\nLinha: " + linha);
-    }
-
-    private void removeIf(int start, int end, boolean functionReturn, Token tokenFunction) {
-        for (int i = start; i >= end; i--) {
-            listaTokenFuncao.remove(i);
-        }
-
-        if (functionReturn && tokenFunction != null) {
-            listaTokenFuncao.add(tokenFunction);
-        }
     }
 
     public void setLinha(int linha) {
