@@ -119,6 +119,9 @@ public class Semantico {
         return Integer.toString(pos);
     }
 
+    /**
+     * Retorna o rotulo de um procedimento que foi atribuido durante sua criação.
+     */
     public int procuraRotuloProcedimento(Token token) throws SemanticoException {
         int rotres = tabelaSimbolos.procurarRotuloProcedimento(token.getLexema());
 
@@ -130,6 +133,9 @@ public class Semantico {
         }
     }
 
+    /**
+     * Retorna o rotulo de uma função que foi atribuido durante sua criação.
+     */
     public int procurarRotuloFuncao(Token token) throws SemanticoException {
         int rotres = tabelaSimbolos.procurarRotuloFuncao(token.getLexema());
         if (rotres == -1) {
@@ -150,7 +156,23 @@ public class Semantico {
                 "Não foi encontrado um simbolo com esse nome: '" + token.getLexema() + "' Linha: " + linha);
     }
 
-    // essa função passa a expressão recebida para o formato pós-fixa
+    /**
+     * Essa função transforma uma expressão infixa para uma expressão pos-fixa
+     * Para Identificadores(caracteres), Numeros e Verdadeiro ou falso:
+     * São escritos na String Saida da esquerda para a Direita, ou seja na mesma
+     * sequencia de entrada
+     * 
+     * Para os operadores usamos o recurso de Pilha
+     * A inserção operadores na Pilha se da:
+     * O último operador a entrar é o primeiro a sair (política LIFO)
+     * Quando um operador de maior Prioridade é lido, este ocupa o topo da pilha
+     * O topo da pilha permanece na pilha até aparecer na entrada um operador de
+     * prioridade menor ou igual.
+     * Assim este operador (menos prioritario) deve ser escrito na String Saida
+     * 
+     * @param exp Recebe uma expressão
+     * @return retorna a String saida para o Sintatico
+     */
     public String expressaoParaPosFixa(List<Token> exp) {
         List<String> pilha = new ArrayList<String>();
         String saida = "";
@@ -208,7 +230,14 @@ public class Semantico {
         return saida;
     }
 
-    // retorna a prioridade de cada operador, essa função auxilia na pós-fixa
+    /**
+     * Esta Função tem como objetivo retornar a prioridade de um operador
+     * Acontece uma comparação onde cada operador é transformado em numero inteiro
+     * Quanto maior seu numero mair sua prioridade
+     * 
+     * @param operador Operador enviado atraves da Função Pos-fixa
+     * @return Retorna um valor inteiro, sua prioridade
+     */
     private int definePrioridaOperador(String operador) {
         if (null != operador)
             switch (operador) {
@@ -239,8 +268,13 @@ public class Semantico {
         return -1;
     }
 
-    // retorna se a expressão é do tipo inteiro ou booleano de acordo com os valores
-    // 0=int, 1=boolean
+    /**
+     * Essa função serve para verifica o tipo de uma expressão
+     *
+     * @param exp O sintatico manda uma expressão em notação pos-fixa
+     * @return Retorna 0 para Inteiro / Retorna 1 para Booleano
+     * @throws SemanticoException
+     */
     public String retornaTipoExpressao(String exp) throws SemanticoException {
         String tipo = separaPosFixaExp(exp);
 
@@ -251,7 +285,35 @@ public class Semantico {
         }
     }
 
-    // verifica se as expressoes são válidas e retorna o tipo de expressão final
+    /**
+     * Essa função tem como objetivo verificar se a toda expressão pertence ao mesmo
+     * tipo
+     * No primeiro for:
+     * Fazemos a verificacao dos Identificadores(caracteres), Numeros e Verdadeiro
+     * ou falso
+     * Escrevemos 0 para Identificadores (do tipo Inteiro) e numeros
+     * Escrevemos 1 para Identificadores (do tipo booleano) e verdadeiro ou falso
+     * 
+     * No Segundo for:
+     * No primeiro if:
+     * Fazemos a verificacao dos operadores e dos tipos setados no primeiro for
+     * Como a expressão veio em notação pos-fixa sabemos que ao achar um operador
+     * (lendo da esquerda para a direita)
+     * o anterior a ele (j - 1) sera um tipo e tambem que o (j - 2) sera outro tipo
+     * Assim sabemos que a cada tres posições do explist teremos um retorno de seu
+     * tipo
+     * No segundo if:
+     * serve para verificamos operadores Unario
+     * Assim sabemos que a cada 2 posições do explist teremos um retorno de seu tipo
+     * 
+     * Desse modo escrevemos, no explist, esse tipo para analisar com o restante da
+     * Expressão
+     * no final explit tera somete 1 posição
+     * 
+     * @param exp Tem como Parametro uma expressão em notação pos-fixa
+     * @return Retornamos a unica posição de explist que contem o tipo da expressão
+     * @throws SemanticoException
+     */
     private String separaPosFixaExp(String exp) throws SemanticoException {
         String[] aux = exp.split(" ");
         List<String> explist = new ArrayList<String>(Arrays.asList(aux));
@@ -291,7 +353,22 @@ public class Semantico {
         return explist.get(0);
     }
 
-    // formata a expressao de uma forma que facilite a geração de codigo
+    /**
+     * É uma função que auxilia a geração de codigo
+     * Ela é importante para saber qual a posição de variaveis e qual o rotulo das
+     * funções
+     * Para isso ela consulta a tabela de Simbolo
+     * Para Var:
+     * Ela escreve, em nova novoexp, a letra 'p' e sua posição
+     * O p serve para escrever LDV Posição
+     * Para Funçôes:
+     * Ela escreve, em nova novoexp, a letra 'funcao', sua posição e 'p0'
+     * O p0 serve para escrevermos LDV 0 depois de um Call L Rotulo
+     * 
+     * @param exp Tem como Parametro uma expressão em notação pos-fixa
+     * @return retorna a String novoexp para o Sintatico
+     * @throws SemanticoException
+     */
     public String formataExpressao(String exp) throws SemanticoException {
         String[] aux = exp.split(" ");
         String novoexp = "";
@@ -335,18 +412,32 @@ public class Semantico {
         return false;
     }
 
-    // retorna qual o formato a operação deve ter de acordo com os operadores e o
-    // operador
+    /**
+     * Verifica e retorna o formato que a operação deve ter de acordo com os
+     * operadores e o operador:
+     * 0 = inteiro
+     * 1 = booleano
+     * Um operador matematico deve apenas se envolver com variaveis do tipo inteiro
+     * e operadores lógicos devem apenas se envolver com variaveis booleanas.
+     * 
+     * @param tipo1    primeiro operador
+     * @param tipo2    segundo operador
+     * @param operador operador
+     * @return retorna o resultado de acordo com a operação
+     * @throws SemanticoException em caso de alguma operação não tiver o operador
+     *                            correto, uma exceção é gerada.
+     */
     private String retornaTipoOperacao(String tipo1, String tipo2, String operador) throws SemanticoException {
-        // 0=inteiro, 1=booleano
         if (ehOperador(operador)) {
             if (ehOperadorMatematico(operador)) {
+                // + | - | * | div
                 if (tipo1 == "0" && tipo2 == "0") {
                     return "0";
                 }
                 throw new SemanticoException(
                         "Operações aritméticas (+ | - | * | div) devem ter duas variáveis inteiras.Linha: " + linha);
             } else if (ehOperadorRelacional(operador)) {
+                // != | = | < | <= | > | >=
                 if (tipo1 == "0" && tipo2 == "0") {
                     return "1";
                 }
@@ -354,6 +445,7 @@ public class Semantico {
                         "Operações relacionais(!= | = | < | <= | > | >=) devem ter duas variáveis inteiras.Linha: "
                                 + linha);
             } else {
+                // e | ou
                 if (tipo1 == "1" && tipo2 == "1") {
                     return "1";
                 }
@@ -362,17 +454,18 @@ public class Semantico {
             }
         } else {
             if (ehOperadorUnarioMat(operador)) {
+                // +u | -u
                 if (tipo1 == "0") {
                     return "0";
                 }
                 throw new SemanticoException(
                         "Operações com unários (+ | -) devem ser com variáveis inteiras.Linha: " + linha);
             } else {
+                // tipo1 tem que ser um booleano
                 if (tipo1 == "1") {
                     return "1";
                 }
-                throw new SemanticoException(
-                        "Operações com unário não devem ser com variáveis booleanas.Linha: " + linha);
+                throw new SemanticoException("Apenas um numero não pode ser uma operação.Linha: " + linha);
             }
         }
     }
@@ -434,11 +527,24 @@ public class Semantico {
         listaTokenFuncao.clear();
     }
 
-    // verifica quem chamou a função ou variavel
+    /**
+     * verifica quem está utilizando a expressão.
+     * No caso de ter sido chamado por um comando SE ou ENQUANTO, devemos
+     * obrigatoriamente ter um retorno do tipo booleano.
+     * Caso tenha sido chamado em uma atribuição, devemos verificar o tipo da
+     * variavel (inteiro ou booleano) e ver se é compativel com a resposta que está
+     * sendo recebido.
+     * 
+     * @param tipo   recebe o tipo do retorno.
+     * @param chamou recebe quem está recebendo a expressão (SE, ENQUANTO ou
+     *               variavel).
+     * @throws SemanticoException gera uma exceção caso quem chamou não aceite o
+     *                            tipo retornado pela expressão.
+     */
     public void quemChamo(String tipo, String chamou) throws SemanticoException {
         if (Constantes.SE_LEXEMA.equals(chamou) || Constantes.ENQUANTO_LEXEMA.equals(chamou)) {
             if (!(Constantes.BOOLEANO_LEXEMA.equals(tipo))) {
-                throw new SemanticoException("Erro.\nA condição no '" + chamou + "não é booleana");
+                throw new SemanticoException("Erro.\nA condição no '" + chamou + "' não é booleana");
             }
         } else {
             String tipochamou = tabelaSimbolos.procurarTipoVariavelFuncao(chamou);
@@ -451,13 +557,17 @@ public class Semantico {
         }
     }
 
+    /**
+     * 
+     * @param label
+     */
     public void verificarListaFuncao(String label) {
         Token auxToken = null;
 
-        boolean conditionalThenReturn = false;
-        boolean conditionalElseReturn = false;
-        int thenPosition = -1;
-        int elsePosition = thenPosition;
+        boolean condicionalRetornoEntao = false;
+        boolean conditionalRetornoSenao = false;
+        int posicaoEntao = -1;
+        int posicaoSenao = -1;
 
         for (int i = 0; i < listaTokenFuncao.size(); i++) {
             if (Constantes.SE_SIMBOLO.equals(listaTokenFuncao.get(i).getSimbolo())
@@ -468,38 +578,39 @@ public class Semantico {
                     && listaTokenFuncao.get(i).getLexema().contains(label)) {
                 if (listaTokenFuncao.size() > (i + 1)) {
                     if (Constantes.IDENTIFICADOR_SIMBOLO.equals(listaTokenFuncao.get(i + 1).getSimbolo())) {
-                        conditionalThenReturn = true;
+                        condicionalRetornoEntao = true;
                         auxToken = listaTokenFuncao.get(i + 1);
                     }
                 } else {
                     linhaSemRetorno = listaTokenFuncao.get(i).getLinha();
                 }
-                thenPosition = i;
+                posicaoEntao = i;
             } else if (Constantes.SENAO_SIMBOLO.equals(listaTokenFuncao.get(i).getSimbolo())
                     && listaTokenFuncao.get(i).getLexema().contains(label)) {
                 if (listaTokenFuncao.size() > (i + 1)) {
                     if (Constantes.IDENTIFICADOR_SIMBOLO.equals(listaTokenFuncao.get(i + 1).getSimbolo())) {
-                        conditionalElseReturn = true;
-                        elsePosition = i + 1;
+                        conditionalRetornoSenao = true;
+                        posicaoSenao = i + 1;
                         auxToken = listaTokenFuncao.get(i + 1);
                     }
                 } else {
                     linhaSemRetorno = listaTokenFuncao.get(i).getLinha();
-                    elsePosition = i;
+                    posicaoSenao = i;
                 }
             }
         }
-        if (elsePosition == (-1))
-            elsePosition = listaTokenFuncao.size() - 1;
 
-        removeIf(elsePosition, thenPosition, (conditionalThenReturn && conditionalElseReturn), auxToken);
+        if (posicaoSenao == (-1))
+            posicaoSenao = listaTokenFuncao.size() - 1;
+
+        removeIf(posicaoSenao, posicaoEntao, (condicionalRetornoEntao && conditionalRetornoSenao), auxToken);
     }
 
-    public boolean verificarSeFuncaoTemRetorno(String nameOfFunction) throws SemanticoException {
+    public boolean verificarSeFuncaoTemRetorno(String nomeFuncao) throws SemanticoException {
         int aux = 0;
 
         for (int i = 0; i < listaTokenFuncao.size(); i++) {
-            if (nameOfFunction.equals(listaTokenFuncao.get(i).getLexema())) {
+            if (nomeFuncao.equals(listaTokenFuncao.get(i).getLexema())) {
                 aux++;
                 if (aux == listaTokenFuncao.size()) {
                     return true;

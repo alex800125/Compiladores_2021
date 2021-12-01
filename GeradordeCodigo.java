@@ -92,11 +92,12 @@ public class GeradordeCodigo {
         }
     }
 
-    // ao ser compilado o programa com sucesso é gerado o arquivo assembly .txt no
-    // disco E:
+    // Ao ser compilado com sucesso, o código gera o arquivo assembly .txt no
+    // endereço abaixo.
     public void criaArquivo() {
         try {
-            File directory = new File("E:\\", "cod_assembly.txt");
+            // File directory = new File("E:\\", "cod_assembly.txt");
+            File directory = new File("D:\\compiladores", "cod_assembly.txt");
             directory.createNewFile();
 
             FileWriter file = new FileWriter(directory);
